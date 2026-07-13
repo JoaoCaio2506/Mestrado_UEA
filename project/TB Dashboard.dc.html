@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    body { margin: 0; background: #10151A; }
+    * { box-sizing: border-box; }
+    ::placeholder { color: #5F6E76; }
+    input:focus { outline: none; }
+    [contenteditable]:focus { outline: none; }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(47, 217, 184, 0); border-color: #262E34; }
+      50% { box-shadow: 0 0 22px 2px rgba(47, 217, 184, 0.28); border-color: #2FD9B8; }
+    }
+    @keyframes atPulse {
+      0%, 100% { color: #2FD9B8; opacity: 0.6; }
+      50% { color: #2FD9B8; opacity: 1; }
+    }
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(47,217,184,0.5); }
+      50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(47,217,184,0.12); }
+    }
+    @keyframes uploadGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(47, 217, 184, 0); border-color: #1AB69A; }
+      50% { box-shadow: 0 0 22px 2px rgba(47, 217, 184, 0.28); border-color: #2FD9B8; }
+    }
+    @keyframes uploadIconBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes radarPing {
+      0% { transform: scale(0.4); opacity: 0.8; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+    @keyframes orbitSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</helmet>
+
+<div style="height: 100vh; overflow: hidden; background: #10151A; font-family: 'IBM Plex Sans', sans-serif; color: #EDF1F3; display: flex; flex-direction: column;">
+
+  <div style="flex: 1; min-height: 0; padding: 28px 40px 14px 40px; display: flex; gap: 28px; overflow: hidden; position: relative; width: 2230px; height: 725px">
+
+    <!-- Left: patient images -->
+    <div style="width: 1067px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; min-height: 0; height: 730px; position: relative">
+      <div style="min-width: 0; width: 100%;">
+        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 22px; letter-spacing: -0.3px; color: #EDF1F3; overflow-wrap: break-word;">Sistema Multiagentes de Modelos Multimodais para a detecção Automatizada da Tuberculose Pulmonar</div>
+        <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; color: #93A3AB; margin-top: 4px;">Trabalho da Dissertação de João Caio Souza Nunes</div>
+      </div>
+
+      <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 20px; color: #1DBB9E">Imagens do paciente</div>
+
+      <!-- Featured image + previously analyzed images side by side -->
+      <div style="display: flex; gap: 14px; flex: 1; min-height: 0; width: 100%;">
+        <div style="position: relative; flex: 1.4; min-height: 0; border-radius: 14px; border: 3px solid #F0B84A; overflow: hidden; background: repeating-linear-gradient(135deg, #171D22, #171D22 8px, #1B2228 8px, #1B2228 16px); display: flex; align-items: center; justify-content: center;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #5F6E76; text-align: center; padding: 0 10px;">raio-x · torax</div>
+          <div style="position: absolute; top: 10px; left: 10px; background: #2A2313; color: #F0B84A; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 5px 12px; border-radius: 9999px;">Em análise</div>
+
+          <sc-if value="{{ isAnalyzing }}" hint-placeholder-val="{{ false }}">
+            <div style="position: absolute; inset: 0; background: rgba(16,21,26,0.72); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center;">
+              <div style="position: relative; width: 160px; height: 160px;">
+                <div style="position: absolute; inset: 0; border-radius: 9999px; border: 2px solid #2FD9B8; opacity: 0; animation: radarPing 2.4s ease-out infinite;"></div>
+                <div style="position: absolute; inset: 0; border-radius: 9999px; border: 2px solid #2FD9B8; opacity: 0; animation: radarPing 2.4s ease-out infinite; animation-delay: 0.8s;"></div>
+                <div style="position: absolute; inset: 0; border-radius: 9999px; border: 2px solid #2FD9B8; opacity: 0; animation: radarPing 2.4s ease-out infinite; animation-delay: 1.6s;"></div>
+                <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+                  <div style="width: 56px; height: 56px; border-radius: 9999px; background: radial-gradient(circle at 30% 30%, #37E8C4, #0D9E86); display: flex; align-items: center; justify-content: center; animation: iconPulse 1.8s ease-in-out infinite; box-shadow: 0 0 24px rgba(47,217,184,0.5);">
+                    <i class="ti ti-brain" style="font-size: 26px; color: #0D1F1A;"></i>
+                  </div>
+                </div>
+                <div style="position: absolute; inset: 0; animation: orbitSpin 6s linear infinite;">
+                  <div style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);">
+                    <div style="width: 30px; height: 30px; border-radius: 9999px; background: #171D22; border: 2px solid #2FD9B8; display: flex; align-items: center; justify-content: center;">
+                      <i class="ti ti-cpu" style="font-size: 14px; color: #2FD9B8;"></i>
+                    </div>
+                  </div>
+                </div>
+                <div style="position: absolute; inset: 0; animation: orbitSpin 6s linear infinite reverse; animation-delay: -2s;">
+                  <div style="position: absolute; bottom: 6%; left: 6%; transform: translate(-50%, 50%);">
+                    <div style="width: 28px; height: 28px; border-radius: 9999px; background: #171D22; border: 2px solid #F0B84A; display: flex; align-items: center; justify-content: center;">
+                      <i class="ti ti-network" style="font-size: 13px; color: #F0B84A;"></i>
+                    </div>
+                  </div>
+                </div>
+                <div style="position: absolute; inset: 0; animation: orbitSpin 8s linear infinite; animation-delay: -4s;">
+                  <div style="position: absolute; bottom: 10%; right: 0%; transform: translate(50%, 50%);">
+                    <div style="width: 26px; height: 26px; border-radius: 9999px; background: #171D22; border: 2px solid #5B9CFF; display: flex; align-items: center; justify-content: center;">
+                      <i class="ti ti-atom-2" style="font-size: 12px; color: #5B9CFF;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="position: absolute; bottom: 14%; left: 0; right: 0; text-align: center;">
+                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #93A3AB; letter-spacing: 0.04em;">Agentes de IA analisando a imagem…</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #5F6E76; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;">Já analisadas</div>
+          <sc-if value="{{ hasInferred }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ analyzedImages }}" as="img" hint-placeholder-count="3">
+              <div style="position: relative; flex: 1; min-height: 90px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: {{ img.thumb }} center / cover no-repeat, repeating-linear-gradient(135deg, #171D22, #171D22 8px, #1B2228 8px, #1B2228 16px); border: 2px solid #2C363D;">
+                <div style="position: absolute; bottom: 6px; left: 6px; background: {{ img.badgeBg }}; color: {{ img.badgeColor }}; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 9999px; white-space: nowrap; font-weight: 500;">{{ img.label }}</div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noInferenceYet }}" hint-placeholder-val="{{ false }}">
+            <div style="flex: 1; border-radius: 10px; border: 1.5px dashed #2C363D; display: flex; align-items: center; justify-content: center; padding: 12px; text-align: center;">
+              <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 11.5px; color: #5F6E76; line-height: 1.4;">As imagens já analisadas aparecerão aqui após a primeira inferência</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- Upload + previously analyzed images -->
+      <div style="display: flex; gap: 10px; height: 74px; flex-shrink: 0; overflow-x: auto; width: 100%">
+        <div style="flex: 1; min-width: 0; height: 67px; border-radius: 10px; border: 1.5px dashed #2C363D; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; animation: uploadGlow 2.2s ease-in-out infinite; border-color: #1AB69A; border-style: solid; border-width: 2px" style-hover="border-color: #5F6E76;">
+          <i class="ti ti-upload" style="font-size: 45px; color: #2DD6B5; text-align: center; height: 36px; width: 43px; animation: uploadIconBob 2.4s ease-in-out infinite"></i><div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #5F6E76; text-align: center; line-height: 1.4; text-transform: none; width: 259px; height: 14px">Faça o Upload Aqui (JPG · PNG · DICOM)</div>
+        </div>
+
+        <sc-if value="{{ hasInferred }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ analyzedImages }}" as="img" hint-placeholder-count="3">
+            
+          </sc-for>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; min-height: 0; height: 100%">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;">
+        <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 20px; color: #24C7A8">Agentes de diagnóstico</div>
+      </div>
+
+      <div style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 14px; height: 720px">
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+          <sc-for list="{{ topAgentCards }}" as="agent" hint-placeholder-count="4">
+            <div style="background: linear-gradient(180deg, #2FD9B899, #2FD9B826, #10151A); border: 1px solid #262E34; border-radius: 14px; padding: 12px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; border-width: 2px; border-color: #545454; height: 333px; width: 250px">
+              <div style="width: 30px; height: 30px; border-radius: 9999px; background: {{ agent.iconBg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="ti ti-{{ agent.icon }}" style="font-size: 14px; color: {{ agent.iconColor }};"></i>
+              </div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 16px; color: #EDF1F3; min-width: 0; width: 100%; overflow-wrap: break-word">{{ agent.name }}</div>
+              <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: #93A3AB; line-height: 1.35; font-weight: 500; text-align: justify">{{ agent.desc }}</div>
+              <button onClick="{{ agent.select }}" style="width: 100%; margin-top: auto; background: {{ agent.btnBg }}; color: {{ agent.btnColor }}; border: 1px solid {{ agent.btnBorder }}; border-radius: 7px; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 6px 0; cursor: pointer; flex-shrink: 0; border-color: #545454; border-width: 1,5; text-align: center">{{ agent.btnLabel }}</button>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+          <sc-for list="{{ bottomAgentCards }}" as="agent" hint-placeholder-count="3">
+            <div style="background: linear-gradient(180deg, #2FD9B899, #2FD9B826, #10151A); border: 1px solid #262E34; border-radius: 14px; padding: 14px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; border-width: 2px; border-color: #545454; height: 325px; width: 340px">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; width: 100%;">
+                <div style="width: 28px; height: 28px; border-radius: 9999px; background: {{ agent.iconBg }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <i class="ti ti-{{ agent.icon }}" style="font-size: 14px; color: {{ agent.iconColor }};"></i>
+                </div>
+                <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 16px; color: #EDF1F3; min-width: 0; overflow-wrap: break-word">{{ agent.name }}</div>
+              </div>
+              <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: #93A3AB; line-height: 1.35; font-weight: 500; text-align: justify">{{ agent.desc }}</div>
+              <button onClick="{{ agent.select }}" style="width: 100%; margin-top: auto; background: {{ agent.btnBg }}; color: {{ agent.btnColor }}; border: 1px solid {{ agent.btnBorder }}; border-radius: 7px; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 6px 0; cursor: pointer; flex-shrink: 0; border-color: #545454; border-width: 1,5; text-align: center">{{ agent.btnLabel }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: agents, top-right aligned above the image panel's height -->
+    
+</div>
+
+  <!-- Chat bar -->
+  <div style="flex-shrink: 0; display: flex; justify-content: center; padding: 14px 40px 20px 40px; background: #10151A; border-top: 1px solid #171D22; width: 2213px; height: 92px">
+    <div style="position: relative; width: 100%; max-width: 900px;">
+
+      <sc-if value="{{ showMentionDropdown }}" hint-placeholder-val="{{ false }}">
+        <div style="position: absolute; bottom: calc(100% + 10px); left: 0; width: 280px; background: #171D22; border: 1px solid #262E34; border-radius: 12px; padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.45); max-height: 280px; overflow-y: auto;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #5F6E76; padding: 6px 10px 4px 10px; text-transform: uppercase; letter-spacing: 0.04em;">Mencionar agente</div>
+          <sc-for list="{{ mentionCandidates }}" as="cand" hint-placeholder-count="3">
+            <div onClick="{{ cand.choose }}" style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer;" style-hover="background: #1B2228;">
+              <div style="width: 28px; height: 28px; border-radius: 9999px; background: #0D1219; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="ti ti-{{ cand.icon }}" style="font-size: 14px; color: #93A3AB;"></i>
+              </div>
+              <div style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: #EDF1F3;">{{ cand.name }}</div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noCandidates }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 10px; font-size: 12px; color: #5F6E76; font-family: 'IBM Plex Mono', monospace;">nenhum agente encontrado</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <div style="display: flex; align-items: center; gap: 10px; background: #171D22; border: 2px solid #2FD9B8; border-radius: 14px; padding: 8px; animation: {{ barAnimation }}; box-shadow: 0 0 0 4px rgba(47,217,184,0.08);">
+        <div style="width: 38px; height: 38px; border-radius: 9999px; background: radial-gradient(circle at 30% 30%, #37E8C4, #0D9E86); display: flex; align-items: center; justify-content: center; flex-shrink: 0; animation: iconPulse 1.8s ease-in-out infinite;">
+          <i class="ti ti-sparkles" style="font-size: 18px; color: #0D1F1A;"></i>
+        </div>
+        <sc-if value="{{ isIdle }}" hint-placeholder-val="{{ true }}">
+          <div style="position: relative; flex: 1; min-width: 0;">
+            <sc-if value="{{ showPlaceholder }}" hint-placeholder-val="{{ true }}">
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; padding: 8px 4px; pointer-events: none; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; color: #5F6E76; white-space: nowrap; overflow: hidden;">
+                Pergunte sobre o diagnóstico… digite <span style="font-family: 'IBM Plex Mono', monospace; font-weight: 600; margin: 0 3px; animation: atPulse 1.6s ease-in-out infinite;">@</span> para mencionar um agente
+              </div>
+            </sc-if>
+            <div ref="{{ inputRef }}" contentEditable="true" onInput="{{ onChatInput }}" onKeyDown="{{ onChatKeyDown }}" style="position: relative; min-height: 22px; color: #EDF1F3; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 8px 4px; line-height: 22px;"></div>
+          </div>
+          <button onClick="{{ onSend }}" style="width: 36px; height: 36px; border-radius: 9999px; background: #2FD9B8; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" style-hover="filter: brightness(1.08);">
+            <i class="ti ti-arrow-up" style="font-size: 18px; color: #0D1F1A; font-weight: 600;"></i>
+          </button>
+        </sc-if>
+        <sc-if value="{{ isNotIdle }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 8px; min-width: 0;">
+            <div style="flex: 1; height: 14px; border-radius: 9999px; background: #0D1219; overflow: hidden; position: relative;">
+              <div style="position: absolute; inset: 0; width: {{ progressWidth }}; background: linear-gradient(90deg, #1AB69A, #2FD9B8); border-radius: 9999px; transition: width {{ progressDurationMs }}ms linear;"></div>
+            </div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #2FD9B8; font-weight: 600; min-width: 42px; text-align: right; flex-shrink: 0;">{{ progressLabel }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accentColor&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#2FD9B8&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#2FD9B8&quot;, &quot;#5B9CFF&quot;, &quot;#F0B84A&quot;, &quot;#F0918A&quot;], &quot;section&quot;: &quot;Aparência&quot; },
+  &quot;imagePanelWidth&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 400, &quot;min&quot;: 320, &quot;max&quot;: 520, &quot;step&quot;: 10, &quot;unit&quot;: &quot;px&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Layout&quot; },
+  &quot;agentColumns&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: 4, &quot;options&quot;: [3, 4, 5], &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Layout&quot; }
+}">
+const AGENTS = [
+  { id: 'convnext', icon: 'cpu', name: 'Agente 1 - ConvNext', desc: 'Esta CNN modernizada incorpora lições de Vision Transformers, utilizando kernels de 7x7 e ativação GELU através de fine-tuning. O modelo atingiu 97,86% de acurácia e um excelente índice AUC-ROC de 0,9980, destacando-se pela precisão de 99% na identificação da classe de Tuberculose.' },
+  { id: 'resnet50', icon: 'network', name: 'Agente 2 - ResNet50', desc: 'Arquitetura clássica e consolidada que utiliza conexões de salto (skip connections) para otimizar o fluxo de aprendizado em redes profundas. Com foco na estabilidade do gradiente, este modelo apresentou 74,76% de acurácia, consolidando-se como um pilar fundamental e estável no aprendizado de arquiteturas residuais.' },
+  { id: 'efficientnet', icon: 'atom-2', name: 'Agente 3 - EfficientNet', desc: 'Arquitetura focada em eficiência com escalonamento composto, este modelo foi treinado para otimizar o balanço entre velocidade e precisão de imagem. Com uma execução robusta, obteve 99,64% de acurácia de validação, registrando apenas 3 erros em todo o conjunto de 840 casos testados.' },
+  { id: 'unet', icon: 'brain', name: 'Agente 4 - UNet', desc: 'Esta arquitetura customizada de segmentação médica, adaptada para classificação profunda, foi validada em um dataset balanceado de 4.200 imagens. O modelo demonstrou performance de excelência com 99,6% de acurácia, atingindo sensibilidade e precisão máximas sem erros no conjunto de validação.' },
+  { id: 'yolo26', icon: 'scan-eye', name: 'Agente 5 - Yolo26', desc: 'Focado em inferência em tempo real, este modelo ultra-leve possui 1,5 milhão de parâmetros e utiliza blocos de atenção espacial. Treinado com otimizador AdamW e precisão mista, alcançou 99,88% de acurácia, treino de 3,3 minutos e latência de apenas 0,3ms.' },
+];
+
+const WIDE_AGENTS = [
+  { id: 'consenso', icon: 'users-group', name: 'Agente 6 - Consenso geral', desc: 'Esta função apresenta uma visão unificada sobre o desempenho dos agentes do nosso sitema. Ela resume como os modelos se comportam em conjunto, destacando a evolução técnica das arquiteturas e como elas combinam alta precisão diagnóstica com eficiência computacional para apoiar a decisão médica.' },
+  { id: 'comparacao', icon: 'arrows-diff', name: 'Agente 7 - Comparação', desc: 'Esta função permite que você analise modelos lado a lado de forma personalizada. Basta selecionar e digitar quais arquiteturas deseja comparar para visualizar um confronto direto focado em acurácia, velocidade de inferência e eficiência de hardware, ajudando a escolher a melhor solução para o seu cenário.' },
+];
+
+const ANALYZED_IMAGES = [
+  { id: 1, diag: 'tb', pct: 75, src: './tuberculosis-121-mrjjypq6-aqsf.png' },
+  { id: 2, diag: 'normal', pct: 92, src: './normal-1001-mrjkbu00-h3nr.png' },
+  { id: 3, diag: 'tb', pct: 68, src: './tuberculosis-121-mrjjypq6-aqsf.png' },
+];
+
+class Component extends DCLogic {
+  state = {
+    selectedAgentId: null,
+    hasInteracted: false,
+    hasInferred: true,
+    isEmpty: true,
+    mentionQuery: null,
+    mentionNode: null,
+    mentionStart: 0,
+    loadingPhase: 'idle',
+    progressWidth: '0%',
+    progressDurationMs: 0,
+  };
+
+  runInference() {
+    const el = this.inputRef.current;
+    const isEmpty = !el || (el.textContent || '').trim().length === 0;
+    if (isEmpty || this.state.loadingPhase !== 'idle') return;
+
+    const duration = 5000 + Math.random() * 5000;
+    this.setState({ loadingPhase: 'loading', progressWidth: '0%', progressDurationMs: duration });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => this.setState({ progressWidth: '100%' }));
+    });
+
+    clearTimeout(this._loadingTimer);
+    this._loadingTimer = setTimeout(() => {
+      this.setState({ loadingPhase: 'done' });
+      clearTimeout(this._doneTimer);
+      this._doneTimer = setTimeout(() => {
+        const inputEl = this.inputRef.current;
+        if (inputEl) inputEl.textContent = '';
+        this.setState({ loadingPhase: 'idle', hasInferred: true, isEmpty: true, progressWidth: '0%' });
+      }, 700);
+    }, duration);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._loadingTimer);
+    clearTimeout(this._doneTimer);
+  }
+
+  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
+  makeMentionPill(name) {
+    const span = document.createElement('span');
+    span.contentEditable = 'false';
+    span.textContent = name;
+    Object.assign(span.style, {
+      display: 'inline-block',
+      background: '#0D2A25',
+      color: '#2FD9B8',
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontSize: '13px',
+      fontWeight: '500',
+      padding: '2px 10px',
+      borderRadius: '9999px',
+      margin: '0 2px',
+      verticalAlign: 'middle',
+    });
+    return span;
+  }
+
+  insertMentionAt(agent, range) {
+    const el = this.inputRef.current;
+    if (!el) return;
+    el.focus();
+    let useRange = range;
+    if (!useRange) {
+      const sel = window.getSelection();
+      if (sel.rangeCount && el.contains(sel.anchorNode)) {
+        useRange = sel.getRangeAt(0);
+      } else {
+        useRange = document.createRange();
+        useRange.selectNodeContents(el);
+        useRange.collapse(false);
+      }
+    } else {
+      useRange.deleteContents();
+    }
+    const pill = this.makeMentionPill(agent.name);
+    useRange.insertNode(pill);
+    const space = document.createTextNode('\u00A0');
+    const afterPill = document.createRange();
+    afterPill.setStartAfter(pill);
+    afterPill.collapse(true);
+    afterPill.insertNode(space);
+    afterPill.setStartAfter(space);
+    afterPill.collapse(true);
+    const sel2 = window.getSelection();
+    sel2.removeAllRanges();
+    sel2.addRange(afterPill);
+    this.setState({
+      selectedAgentId: agent.id,
+      hasInteracted: true,
+      mentionQuery: null,
+      isEmpty: false,
+    });
+  }
+
+  selectAgent(agent) {
+    this.insertMentionAt(agent, null);
+  }
+
+  selectMentionFromDropdown(agent) {
+    const { mentionNode, mentionStart } = this.state;
+    if (mentionNode) {
+      const sel = window.getSelection();
+      const endOffset = (sel.rangeCount && sel.anchorNode === mentionNode) ? sel.anchorOffset : mentionNode.textContent.length;
+      const range = document.createRange();
+      range.setStart(mentionNode, Math.min(mentionStart, mentionNode.textContent.length));
+      range.setEnd(mentionNode, Math.min(endOffset, mentionNode.textContent.length));
+      this.insertMentionAt(agent, range);
+    } else {
+      this.insertMentionAt(agent, null);
+    }
+  }
+
+  onChatInput() {
+    const el = this.inputRef.current;
+    const isEmpty = !el || (el.textContent || '').trim().length === 0;
+    const sel = window.getSelection();
+    let mentionQuery = null, mentionNode = null, mentionStart = 0;
+    if (sel && sel.rangeCount) {
+      const node = sel.anchorNode;
+      if (node && node.nodeType === 3 && el && el.contains(node)) {
+        const text = node.textContent || '';
+        const caret = sel.anchorOffset;
+        const upto = text.slice(0, caret);
+        const m = upto.match(/@([^\s@]*)$/);
+        if (m) {
+          mentionQuery = m[1];
+          mentionNode = node;
+          mentionStart = caret - m[0].length;
+        }
+      }
+    }
+    this.setState({ isEmpty, mentionQuery, mentionNode, mentionStart, hasInteracted: this.state.hasInteracted || !isEmpty });
+  }
+
+  onChatKeyDown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      this.setState({ mentionQuery: null });
+    }
+  }
+
+  renderVals() {
+    const selectedId = this.state.selectedAgentId;
+    const allAgents = [...AGENTS, ...WIDE_AGENTS];
+    const accent = this.props.accentColor ?? '#2FD9B8';
+    const accentDark = this.props.accentDark ?? '#0D2A25';
+
+    const columns = this.props.agentColumns ?? 4;
+    const totalCards = AGENTS.length + WIDE_AGENTS.length;
+    const remainder = totalCards % columns;
+    const lastIndex = totalCards - 1;
+
+    const decorate = (a, idx) => {
+      const isSelected = a.id === selectedId;
+      const isLast = idx === lastIndex;
+      const colSpan = (isLast && remainder !== 0) ? (columns - remainder + 1) : 1;
+      return {
+        ...a,
+        iconBg: isSelected ? accentDark : '#0D1219',
+        iconColor: isSelected ? accent : '#93A3AB',
+        btnBg: isSelected ? accent : 'transparent',
+        btnColor: isSelected ? '#0D1F1A' : '#93A3AB',
+        btnBorder: isSelected ? accent : '#2C363D',
+        btnLabel: isSelected ? 'Selecionado' : 'Selecionar',
+        colSpan,
+        select: () => this.selectAgent(a),
+      };
+    };
+
+    const analyzedImages = ANALYZED_IMAGES.map(img => ({
+      ...img,
+      badgeBg: img.diag === 'tb' ? '#2A1414' : '#132A1F',
+      badgeColor: img.diag === 'tb' ? '#F0918A' : '#7FDCAE',
+      label: img.diag === 'tb' ? `${img.pct}% TB` : `${img.pct}% normal`,
+      thumb: `url("${img.src}")`,
+    }));
+
+    const mentionQuery = this.state.mentionQuery;
+    const showMentionDropdown = mentionQuery !== null;
+    const q = (mentionQuery || '').toLowerCase();
+    const mentionCandidates = allAgents
+      .filter(a => a.name.toLowerCase().includes(q))
+      .map(a => ({ ...a, choose: () => this.selectMentionFromDropdown(a) }));
+
+    return {
+      agents: AGENTS.map(decorate),
+      wideAgents: WIDE_AGENTS.map(decorate),
+      allAgentCards: [...AGENTS, ...WIDE_AGENTS].map((a, idx) => decorate(a, idx)),
+      topAgentCards: [...AGENTS, ...WIDE_AGENTS].slice(0, 4).map((a, idx) => decorate(a, idx)),
+      bottomAgentCards: [...AGENTS, ...WIDE_AGENTS].slice(4, 7).map((a, idx) => decorate(a, idx + 4)),
+      analyzedImages,
+      inputRef: this.inputRef,
+      onChatInput: () => this.onChatInput(),
+      onChatKeyDown: (e) => this.onChatKeyDown(e),
+      showPlaceholder: this.state.isEmpty,
+      showMentionDropdown,
+      mentionCandidates,
+      noCandidates: mentionCandidates.length === 0,
+      barAnimation: this.state.hasInteracted ? 'none' : 'glowPulse 2.4s ease-in-out infinite',
+      hasInferred: this.state.hasInferred,
+      noInferenceYet: !this.state.hasInferred,
+      onSend: () => this.runInference(),
+      accentColor: accent,
+      imagePanelWidth: (this.props.imagePanelWidth ?? 400) + 'px',
+      agentColumns: columns,
+      isAnalyzing: this.state.loadingPhase === 'loading' || this.state.loadingPhase === 'done',
+      isIdle: this.state.loadingPhase === 'idle',
+      isNotIdle: this.state.loadingPhase !== 'idle',
+      progressWidth: this.state.progressWidth,
+      progressDurationMs: this.state.progressWidth === '100%' ? this.state.progressDurationMs : 200,
+      progressLabel: this.state.loadingPhase === 'done' ? '100%' : 'Analisando…',
+    };
+  }
+}
+</script>
+</body>
+</html>

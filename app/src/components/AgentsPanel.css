@@ -24,7 +24,10 @@
 
 .agents-grid {
   display: grid;
+  align-items: stretch;
   gap: 10px;
+  flex: 1;
+  min-height: 200px;
 }
 
 .agents-grid--top {

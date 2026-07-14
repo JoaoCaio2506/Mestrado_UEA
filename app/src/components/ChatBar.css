@@ -206,8 +206,18 @@
 
 .chatbar-collapse-row {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 6px;
+}
+
+.chatbar-icon-btn-end {
+  margin-left: auto;
+}
+
+.chatbar-icon-btn-danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .chatbar-icon-btn {

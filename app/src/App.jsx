@@ -73,11 +73,12 @@ export default function App() {
         // TODO: replace buildDiagnosisResponse with the real n8n webhook call
         // once it's available — same (agentId, image) in, { text, diag, pct } out.
         const { text: responseText, diag, pct } = buildDiagnosisResponse(selectedAgentId);
+        const roundedPct = Math.round(pct);
         setAnalyzedImages((prev) => [
           {
             id: `analyzed-${Date.now()}`,
             diag,
-            pct: Math.round(pct),
+            pct: roundedPct,
             src: currentImage.previewable ? currentImage.url : null,
             name: currentImage.name,
           },
@@ -87,15 +88,17 @@ export default function App() {
           ...prev,
           { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },
         ]);
-        if (currentImage.previewable) objectUrlRef.current = null; // ownership passed to the analyzed list
-        else URL.revokeObjectURL(currentImage.url);
-        setCurrentImage(null);
+        // The classified image stays in the featured slot with its result
+        // badge instead of reverting to empty — the next upload replaces it.
+        setCurrentImage((prev) => (prev ? { ...prev, result: { diag, pct: roundedPct } } : prev));
         chatRef.current?.clear();
         setLoadingPhase('idle');
         setProgressWidth('0%');
       }, 700);
     }, duration);
   };
+
+  const handleClearChat = () => setChatMessages([]);
 
   const effectiveProgressDurationMs = progressWidth === '100%' ? progressDurationMs : 200;
   const progressLabel = loadingPhase === 'done' ? '100%' : 'Analisando…';
@@ -128,6 +131,7 @@ export default function App() {
         canSend={!!currentImage}
         onSend={handleSend}
         messages={chatMessages}
+        onClearChat={handleClearChat}
       />
     </div>
   );

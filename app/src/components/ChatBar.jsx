@@ -15,6 +15,7 @@ const ChatBar = forwardRef(function ChatBar(
     canSend,
     onSend,
     messages,
+    onClearChat,
   },
   ref,
 ) {
@@ -75,8 +76,17 @@ const ChatBar = forwardRef(function ChatBar(
         ) : (
           <>
             <div className="chatbar-collapse-row">
+              {messages.length > 0 && (
+                <button
+                  className="chatbar-icon-btn chatbar-icon-btn-danger"
+                  onClick={onClearChat}
+                  title="Limpar conversa"
+                >
+                  <i className="ti ti-trash" />
+                </button>
+              )}
               <button
-                className="chatbar-icon-btn"
+                className="chatbar-icon-btn chatbar-icon-btn-end"
                 onClick={() => setIsMinimized(true)}
                 title="Minimizar chat"
               >

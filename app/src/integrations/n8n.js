@@ -45,7 +45,10 @@ export async function callN8n({ text, imageFile, sessionId, signal }) {
   const formData = new FormData();
   formData.append('chatInput', text);
   formData.append('sessionId', sessionId);
-  if (imageFile) formData.append('file', imageFile, imageFile.name);
+  // Field name must be exactly "Imagem" — the n8n Webhook node's "Field Name
+  // for Binary Data" option matches the incoming multipart field name, not
+  // just the resulting binary property name.
+  if (imageFile) formData.append('Imagem', imageFile, imageFile.name);
 
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: 'POST',

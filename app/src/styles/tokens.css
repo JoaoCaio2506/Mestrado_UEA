@@ -1,0 +1,129 @@
+:root {
+  --bg: #10151a;
+  --surface: #171d22;
+  --border: #262e34;
+  --border-soft: #2c363d;
+  --accent: #2fd9b8;
+  --accent-ink: #0d1f1a;
+  --accent-bg: #0d2a25;
+  --text-primary: #edf1f3;
+  --text-secondary: #93a3ab;
+  --text-muted: #5f6e76;
+  --danger: #f0918a;
+  --danger-bg: #2a1414;
+  --success: #7fdcae;
+  --success-bg: #132a1f;
+  --warning: #f0b84a;
+  --warning-bg: #2a2313;
+
+  --font-title: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus {
+  outline: none;
+}
+
+[contenteditable]:focus {
+  outline: none;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 217, 184, 0);
+    border-color: var(--border);
+  }
+  50% {
+    box-shadow: 0 0 22px 2px rgba(47, 217, 184, 0.28);
+    border-color: var(--accent);
+  }
+}
+
+@keyframes atPulse {
+  0%,
+  100% {
+    color: var(--accent);
+    opacity: 0.6;
+  }
+  50% {
+    color: var(--accent);
+    opacity: 1;
+  }
+}
+
+@keyframes iconPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(47, 217, 184, 0.5);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px rgba(47, 217, 184, 0.12);
+  }
+}
+
+@keyframes uploadGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 217, 184, 0);
+    border-color: #1ab69a;
+  }
+  50% {
+    box-shadow: 0 0 22px 2px rgba(47, 217, 184, 0.28);
+    border-color: var(--accent);
+  }
+}
+
+@keyframes uploadIconBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes radarPing {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+@keyframes orbitSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

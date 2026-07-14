@@ -1,0 +1,33 @@
+.chat-history {
+  max-height: 260px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 4px 0 4px;
+}
+
+.chat-msg {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.chat-msg-user {
+  align-self: flex-end;
+  background: #3a3f44;
+  color: var(--text-primary);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-top-right-radius: 4px;
+  max-width: 75%;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-msg-assistant {
+  align-self: stretch;
+  color: var(--text-primary);
+  white-space: pre-line;
+}

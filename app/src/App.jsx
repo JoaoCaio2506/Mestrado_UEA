@@ -1,0 +1,134 @@
+import { useEffect, useRef, useState } from 'react';
+import Header from './components/Header';
+import PatientImagesPanel from './components/PatientImagesPanel';
+import AgentsPanel from './components/AgentsPanel';
+import ChatBar from './components/ChatBar';
+import { SAMPLE_ANALYZED_IMAGES } from './data/sampleImages';
+import { buildDiagnosisResponse } from './data/diagnosisResponse';
+import './App.css';
+
+const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
+
+export default function App() {
+  const [selectedAgentId, setSelectedAgentId] = useState(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [analyzedImages, setAnalyzedImages] = useState(SAMPLE_ANALYZED_IMAGES);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [loadingPhase, setLoadingPhase] = useState('idle');
+  const [progressWidth, setProgressWidth] = useState('0%');
+  const [progressDurationMs, setProgressDurationMs] = useState(0);
+
+  const chatRef = useRef(null);
+  const loadingTimerRef = useRef(null);
+  const doneTimerRef = useRef(null);
+  const objectUrlRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      clearTimeout(loadingTimerRef.current);
+      clearTimeout(doneTimerRef.current);
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    },
+    [],
+  );
+
+  const handleSelectAgent = (agent) => {
+    setSelectedAgentId(agent.id);
+    chatRef.current?.mentionAgent(agent);
+    setHasInteracted(true);
+  };
+
+  const handleFileSelected = (file) => {
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    const url = URL.createObjectURL(file);
+    objectUrlRef.current = url;
+    setCurrentImage({
+      url,
+      name: file.name,
+      previewable: IMAGE_MIME_TYPES.includes(file.type),
+    });
+    setHasInteracted(true);
+  };
+
+  const handleSend = (text) => {
+    if (loadingPhase !== 'idle' || !currentImage) return;
+
+    setChatMessages((prev) => [...prev, { id: `user-${Date.now()}`, role: 'user', text }]);
+
+    const duration = 5000 + Math.random() * 5000;
+    setLoadingPhase('loading');
+    setProgressWidth('0%');
+    setProgressDurationMs(duration);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setProgressWidth('100%'));
+    });
+
+    clearTimeout(loadingTimerRef.current);
+    loadingTimerRef.current = setTimeout(() => {
+      setLoadingPhase('done');
+      clearTimeout(doneTimerRef.current);
+      doneTimerRef.current = setTimeout(() => {
+        // TODO: replace buildDiagnosisResponse with the real n8n webhook call
+        // once it's available — same (agentId, image) in, { text, diag, pct } out.
+        const { text: responseText, diag, pct } = buildDiagnosisResponse(selectedAgentId);
+        setAnalyzedImages((prev) => [
+          {
+            id: `analyzed-${Date.now()}`,
+            diag,
+            pct: Math.round(pct),
+            src: currentImage.previewable ? currentImage.url : null,
+            name: currentImage.name,
+          },
+          ...prev,
+        ]);
+        setChatMessages((prev) => [
+          ...prev,
+          { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },
+        ]);
+        if (currentImage.previewable) objectUrlRef.current = null; // ownership passed to the analyzed list
+        else URL.revokeObjectURL(currentImage.url);
+        setCurrentImage(null);
+        chatRef.current?.clear();
+        setLoadingPhase('idle');
+        setProgressWidth('0%');
+      }, 700);
+    }, duration);
+  };
+
+  const effectiveProgressDurationMs = progressWidth === '100%' ? progressDurationMs : 200;
+  const progressLabel = loadingPhase === 'done' ? '100%' : 'Analisando…';
+
+  return (
+    <div className="dashboard">
+      <div className="main-row">
+        <div className="left-col">
+          <Header />
+          <PatientImagesPanel
+            currentImage={currentImage}
+            isAnalyzing={loadingPhase === 'loading' || loadingPhase === 'done'}
+            analyzedImages={analyzedImages}
+            onFileSelected={handleFileSelected}
+            uploadGlowing={!hasInteracted}
+          />
+        </div>
+
+        <AgentsPanel selectedAgentId={selectedAgentId} onSelectAgent={handleSelectAgent} />
+      </div>
+
+      <ChatBar
+        ref={chatRef}
+        hasInteracted={hasInteracted}
+        onInteract={() => setHasInteracted(true)}
+        loadingPhase={loadingPhase}
+        progressWidth={progressWidth}
+        progressDurationMs={effectiveProgressDurationMs}
+        progressLabel={progressLabel}
+        canSend={!!currentImage}
+        onSend={handleSend}
+        messages={chatMessages}
+      />
+    </div>
+  );
+}

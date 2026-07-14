@@ -1,14 +1,5 @@
 export const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
 
-function fileToBase64DataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
 // The n8n specialist agents are prompted to always emit this exact shape:
 //   Tuberculose: NN%
 //   Normal: NN%
@@ -37,24 +28,28 @@ function parseDiagnosisFromText(text) {
   };
 }
 
-// Calls the n8n Chat Trigger webhook and returns { text, diag, pct } — the
-// same shape data/diagnosisResponse.js's buildDiagnosisResponse returns, so
-// App.jsx can use either one interchangeably.
+// Calls the n8n webhook and returns { text, diag, pct } — the same shape
+// data/diagnosisResponse.js's buildDiagnosisResponse returns, so App.jsx can
+// use either one interchangeably.
+//
+// Sent as multipart/form-data (not JSON+base64) so the image arrives as a
+// real binary part — the same way the n8n workflow's own "API ConvNext" etc.
+// nodes already call the model APIs, and the "Imagem" binary property the
+// whole workflow expects can be set directly on the n8n Webhook node without
+// any decoding step.
 export async function callN8n({ text, imageFile, sessionId, signal }) {
   if (!N8N_WEBHOOK_URL) {
     throw new Error('VITE_N8N_WEBHOOK_URL não configurada.');
   }
 
-  const imageBase64 = imageFile ? await fileToBase64DataUrl(imageFile) : null;
+  const formData = new FormData();
+  formData.append('chatInput', text);
+  formData.append('sessionId', sessionId);
+  if (imageFile) formData.append('file', imageFile, imageFile.name);
 
   const response = await fetch(N8N_WEBHOOK_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      chatInput: text,
-      sessionId,
-      imageBase64,
-    }),
+    body: formData,
     signal,
   });
 

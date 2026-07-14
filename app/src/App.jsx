@@ -8,6 +8,11 @@ import { buildDiagnosisResponse } from './data/diagnosisResponse';
 import './App.css';
 
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
+const MAX_HISTORY = 10;
+
+function revokeIfBlob(url) {
+  if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
+}
 
 export default function App() {
   const [selectedAgentId, setSelectedAgentId] = useState(null);
@@ -22,13 +27,11 @@ export default function App() {
   const chatRef = useRef(null);
   const loadingTimerRef = useRef(null);
   const doneTimerRef = useRef(null);
-  const objectUrlRef = useRef(null);
 
   useEffect(
     () => () => {
       clearTimeout(loadingTimerRef.current);
       clearTimeout(doneTimerRef.current);
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
     },
     [],
   );
@@ -40,9 +43,10 @@ export default function App() {
   };
 
   const handleFileSelected = (file) => {
-    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    // Only safe to revoke the previous blob if it never made it into the
+    // analyzed history — once classified, that list owns the URL instead.
+    if (currentImage && !currentImage.result) revokeIfBlob(currentImage.url);
     const url = URL.createObjectURL(file);
-    objectUrlRef.current = url;
     setCurrentImage({
       url,
       name: file.name,
@@ -74,16 +78,22 @@ export default function App() {
         // once it's available — same (agentId, image) in, { text, diag, pct } out.
         const { text: responseText, diag, pct } = buildDiagnosisResponse(selectedAgentId);
         const roundedPct = Math.round(pct);
-        setAnalyzedImages((prev) => [
-          {
-            id: `analyzed-${Date.now()}`,
-            diag,
-            pct: roundedPct,
-            src: currentImage.previewable ? currentImage.url : null,
-            name: currentImage.name,
-          },
-          ...prev,
-        ]);
+        setAnalyzedImages((prev) => {
+          const next = [
+            {
+              id: `analyzed-${Date.now()}`,
+              diag,
+              pct: roundedPct,
+              src: currentImage.previewable ? currentImage.url : null,
+              name: currentImage.name,
+            },
+            ...prev,
+          ];
+          // Only the 10 most recent analyses stay accessible, even via scroll.
+          const kept = next.slice(0, MAX_HISTORY);
+          next.slice(MAX_HISTORY).forEach((img) => revokeIfBlob(img.src));
+          return kept;
+        });
         setChatMessages((prev) => [
           ...prev,
           { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },

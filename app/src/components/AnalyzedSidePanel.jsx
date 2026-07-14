@@ -15,18 +15,20 @@ export default function AnalyzedSidePanel({ images }) {
     <div className="analyzed-panel">
       <div className="analyzed-panel-title mono">Já analisadas</div>
       {images.length > 0 ? (
-        images.map((img) => (
-          <div
-            key={img.id}
-            className="analyzed-thumb"
-            style={img.src ? { backgroundImage: `url("${img.src}")` } : undefined}
-          >
-            {!img.src && <div className="analyzed-thumb-filename mono">{img.name}</div>}
-            <div className="analyzed-thumb-badge mono" style={badgeStyle(img.diag)}>
-              {labelFor(img)}
+        <div className="analyzed-thumbs-scroll">
+          {images.map((img) => (
+            <div
+              key={img.id}
+              className="analyzed-thumb"
+              style={img.src ? { backgroundImage: `url("${img.src}")` } : undefined}
+            >
+              {!img.src && <div className="analyzed-thumb-filename mono">{img.name}</div>}
+              <div className="analyzed-thumb-badge mono" style={badgeStyle(img.diag)}>
+                {labelFor(img)}
+              </div>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       ) : (
         <div className="analyzed-empty">
           <div className="analyzed-empty-text">

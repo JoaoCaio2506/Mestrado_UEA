@@ -13,17 +13,12 @@ export default function ChatHistory({ messages }) {
 
   return (
     <div className="chat-history" ref={scrollRef}>
-      {messages.map((msg) =>
-        msg.role === 'user' ? (
-          <div key={msg.id} className="chat-msg chat-msg-user">
-            {msg.text}
-          </div>
-        ) : (
-          <div key={msg.id} className="chat-msg chat-msg-assistant">
-            {msg.text}
-          </div>
-        ),
-      )}
+      {messages.map((msg) => (
+        <div key={msg.id} className={`chat-msg chat-msg-${msg.role}`}>
+          {msg.role === 'error' && <i className="ti ti-alert-triangle chat-msg-error-icon" />}
+          {msg.text}
+        </div>
+      ))}
     </div>
   );
 }

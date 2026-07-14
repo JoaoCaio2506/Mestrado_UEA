@@ -5,6 +5,7 @@ import AgentsPanel from './components/AgentsPanel';
 import ChatBar from './components/ChatBar';
 import { SAMPLE_ANALYZED_IMAGES } from './data/sampleImages';
 import { buildDiagnosisResponse } from './data/diagnosisResponse';
+import { callN8n, N8N_WEBHOOK_URL } from './integrations/n8n';
 import './App.css';
 
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
@@ -26,15 +27,20 @@ export default function App() {
 
   const chatRef = useRef(null);
   const loadingTimerRef = useRef(null);
-  const doneTimerRef = useRef(null);
+  const mountedRef = useRef(true);
+  const sessionIdRef = useRef(null);
+  if (!sessionIdRef.current) sessionIdRef.current = crypto.randomUUID();
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    // StrictMode's dev-only mount→unmount→remount cycle would otherwise
+    // leave mountedRef stuck at false after the simulated remount, since
+    // only the cleanup ran below — so it has to be reset on setup too.
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
       clearTimeout(loadingTimerRef.current);
-      clearTimeout(doneTimerRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const handleSelectAgent = (agent) => {
     setSelectedAgentId(agent.id);
@@ -49,13 +55,14 @@ export default function App() {
     const url = URL.createObjectURL(file);
     setCurrentImage({
       url,
+      file,
       name: file.name,
       previewable: IMAGE_MIME_TYPES.includes(file.type),
     });
     setHasInteracted(true);
   };
 
-  const handleSend = (text) => {
+  const handleSend = async (text) => {
     if (loadingPhase !== 'idle' || !currentImage) return;
 
     setChatMessages((prev) => [...prev, { id: `user-${Date.now()}`, role: 'user', text }]);
@@ -69,43 +76,72 @@ export default function App() {
       requestAnimationFrame(() => setProgressWidth('100%'));
     });
 
-    clearTimeout(loadingTimerRef.current);
-    loadingTimerRef.current = setTimeout(() => {
-      setLoadingPhase('done');
-      clearTimeout(doneTimerRef.current);
-      doneTimerRef.current = setTimeout(() => {
-        // TODO: replace buildDiagnosisResponse with the real n8n webhook call
-        // once it's available — same (agentId, image) in, { text, diag, pct } out.
-        const { text: responseText, diag, pct } = buildDiagnosisResponse(selectedAgentId);
-        const roundedPct = Math.round(pct);
-        setAnalyzedImages((prev) => {
-          const next = [
-            {
-              id: `analyzed-${Date.now()}`,
-              diag,
-              pct: roundedPct,
-              src: currentImage.previewable ? currentImage.url : null,
-              name: currentImage.name,
-            },
-            ...prev,
-          ];
-          // Only the 10 most recent analyses stay accessible, even via scroll.
-          const kept = next.slice(0, MAX_HISTORY);
-          next.slice(MAX_HISTORY).forEach((img) => revokeIfBlob(img.src));
-          return kept;
-        });
-        setChatMessages((prev) => [
+    const cosmeticDelay = new Promise((resolve) => {
+      clearTimeout(loadingTimerRef.current);
+      loadingTimerRef.current = setTimeout(resolve, duration);
+    });
+
+    // Real n8n call and the cosmetic progress-bar fill run side by side —
+    // whichever takes longer decides when we reveal the result, so the bar
+    // never lies about being finished before the network actually is.
+    const resultPromise = N8N_WEBHOOK_URL
+      ? callN8n({
+          text,
+          imageFile: currentImage.file,
+          sessionId: sessionIdRef.current,
+        }).then(
+          (value) => ({ ok: true, value }),
+          (error) => ({ ok: false, error }),
+        )
+      : Promise.resolve({ ok: true, value: buildDiagnosisResponse(selectedAgentId) });
+
+    const [, outcome] = await Promise.all([cosmeticDelay, resultPromise]);
+    if (!mountedRef.current) return;
+
+    setLoadingPhase('done');
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    if (!mountedRef.current) return;
+
+    if (outcome.ok) {
+      const { text: responseText, diag, pct } = outcome.value;
+      const roundedPct = Math.round(pct);
+      setAnalyzedImages((prev) => {
+        const next = [
+          {
+            id: `analyzed-${Date.now()}`,
+            diag,
+            pct: roundedPct,
+            src: currentImage.previewable ? currentImage.url : null,
+            name: currentImage.name,
+          },
           ...prev,
-          { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },
-        ]);
-        // The classified image stays in the featured slot with its result
-        // badge instead of reverting to empty — the next upload replaces it.
-        setCurrentImage((prev) => (prev ? { ...prev, result: { diag, pct: roundedPct } } : prev));
-        chatRef.current?.clear();
-        setLoadingPhase('idle');
-        setProgressWidth('0%');
-      }, 700);
-    }, duration);
+        ];
+        // Only the 10 most recent analyses stay accessible, even via scroll.
+        const kept = next.slice(0, MAX_HISTORY);
+        next.slice(MAX_HISTORY).forEach((img) => revokeIfBlob(img.src));
+        return kept;
+      });
+      setChatMessages((prev) => [
+        ...prev,
+        { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },
+      ]);
+      // The classified image stays in the featured slot with its result
+      // badge instead of reverting to empty — the next upload replaces it.
+      setCurrentImage((prev) => (prev ? { ...prev, result: { diag, pct: roundedPct } } : prev));
+    } else {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: 'error',
+          text: `Não foi possível obter o diagnóstico do n8n: ${outcome.error.message}`,
+        },
+      ]);
+    }
+
+    chatRef.current?.clear();
+    setLoadingPhase('idle');
+    setProgressWidth('0%');
   };
 
   const handleClearChat = () => setChatMessages([]);

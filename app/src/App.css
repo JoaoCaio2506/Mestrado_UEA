@@ -18,10 +18,8 @@
 }
 
 .left-col {
-  width: 42%;
-  max-width: 640px;
-  min-width: 380px;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 360px;
   display: flex;
   flex-direction: column;
   gap: 14px;

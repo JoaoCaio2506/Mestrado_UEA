@@ -1,6 +1,6 @@
 .agents-panel {
   flex: 1;
-  min-width: 0;
+  min-width: 360px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -27,7 +27,6 @@
   align-items: stretch;
   gap: 10px;
   flex: 1;
-  min-height: 200px;
 }
 
 .agents-grid--top {

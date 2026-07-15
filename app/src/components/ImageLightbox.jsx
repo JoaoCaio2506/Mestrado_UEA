@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { badgeStyle, labelFor } from '../utils/diagnosisLabel';
 import './ImageLightbox.css';
 
 export default function ImageLightbox({ image, onClose }) {
@@ -24,6 +25,11 @@ export default function ImageLightbox({ image, onClose }) {
           <img className="lightbox-img" src={image.src} alt="Radiografia analisada" />
         ) : (
           <div className="lightbox-placeholder mono">{image.name}</div>
+        )}
+        {image.diag && (
+          <div className="lightbox-badge mono" style={badgeStyle(image.diag)}>
+            {labelFor(image)}
+          </div>
         )}
       </div>
     </div>,

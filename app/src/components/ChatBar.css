@@ -44,8 +44,13 @@
   cursor: pointer;
 }
 
-.mention-candidate:hover {
+.mention-candidate:hover,
+.mention-candidate.highlighted {
   background: #1b2228;
+}
+
+.mention-candidate.highlighted {
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .mention-candidate-icon {

@@ -1,5 +1,19 @@
 export const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
 
+// n8n's consensus/comparison agents identify themselves with longer,
+// technical phrasing ("Sistema Multiagente de Consenso (...)") — map those
+// back to the short names used everywhere else in the UI.
+const AGENT_NAME_ALIASES = [
+  { pattern: /consenso/i, name: 'Consenso Geral' },
+  { pattern: /compara/i, name: 'Comparação' },
+];
+
+function normalizeAgentName(name) {
+  if (!name) return name;
+  const alias = AGENT_NAME_ALIASES.find((a) => a.pattern.test(name));
+  return alias ? alias.name : name;
+}
+
 // The n8n specialist agents are prompted to always emit this exact shape:
 //   Tuberculose: NN%
 //   Normal: NN%
@@ -27,7 +41,7 @@ function parseDiagnosisFromText(text) {
   return {
     diag: diag ?? 'normal',
     pct: pct != null ? Math.round(pct) : 0,
-    agentName: modelMatch ? modelMatch[1].trim() : undefined,
+    agentName: modelMatch ? normalizeAgentName(modelMatch[1].trim()) : undefined,
   };
 }
 

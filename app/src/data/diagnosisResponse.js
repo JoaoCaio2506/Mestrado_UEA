@@ -3,10 +3,6 @@ import { AGENTS } from './agents';
 // Everything in this file simulates what the n8n workflow will eventually
 // return. `buildDiagnosisResponse` is the single function to swap for a real
 // webhook call once the endpoint exists — same input, same shape of output.
-function shortName(agent) {
-  return agent.name.replace(/^Agente \d+ - /i, '');
-}
-
 function randomSplit() {
   const tbPct = Math.floor(1 + Math.random() * 98);
   return { tbPct, normalPct: 100 - tbPct };
@@ -22,7 +18,7 @@ function conclusion(tbPct, normalPct) {
 function buildSingleAgentText(agent) {
   const { tbPct, normalPct } = randomSplit();
   const { diagLabel, diag, confidence } = conclusion(tbPct, normalPct);
-  const name = shortName(agent);
+  const name = agent.name;
   const text =
     `Olá, sou seu Especialista ${name}. Treinado para ter o melhor desempenho possível, atingi acurácia de ${agent.accuracy}%.\n\n` +
     `Analisei sua imagem e o Diagnóstico é: Tuberculose: ${tbPct}% Normal: ${normalPct}%\n\n` +
@@ -33,7 +29,7 @@ function buildSingleAgentText(agent) {
 function buildConsensusText() {
   const { tbPct, normalPct } = randomSplit();
   const { diagLabel, diag, confidence } = conclusion(tbPct, normalPct);
-  const names = AGENTS.map(shortName).join(', ');
+  const names = AGENTS.map((a) => a.name).join(', ');
   const text =
     `Olá, sou o Consenso Geral. Reuni os votos de ${names} sobre sua imagem.\n\n` +
     `Resultado agregado: Tuberculose: ${tbPct}% Normal: ${normalPct}%\n\n` +
@@ -47,7 +43,7 @@ function buildComparisonText() {
     return { agent, tbPct, normalPct };
   });
   const lines = perModel.map(
-    ({ agent, tbPct, normalPct }) => `${shortName(agent)}: Tuberculose ${tbPct}% / Normal ${normalPct}%`,
+    ({ agent, tbPct, normalPct }) => `${agent.name}: Tuberculose ${tbPct}% / Normal ${normalPct}%`,
   );
   const tbVotes = perModel.filter((m) => m.tbPct > m.normalPct).length;
   const diagLabel = tbVotes > perModel.length / 2 ? 'Tuberculose' : 'Normal';

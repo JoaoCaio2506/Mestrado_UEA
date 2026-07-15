@@ -21,9 +21,24 @@
 }
 
 .lightbox-content {
+  position: relative;
   cursor: default;
   max-width: 90vw;
   max-height: 90vh;
+}
+
+.lightbox-badge {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  max-width: calc(100% - 32px);
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lightbox-img {

@@ -1,17 +1,7 @@
 import { useState } from 'react';
 import ImageLightbox from './ImageLightbox';
+import { badgeStyle, labelFor } from '../utils/diagnosisLabel';
 import './AnalyzedSidePanel.css';
-
-function badgeStyle(diag) {
-  return diag === 'tb'
-    ? { background: 'var(--danger-bg)', color: 'var(--danger)' }
-    : { background: 'var(--success-bg)', color: 'var(--success)' };
-}
-
-function labelFor(img) {
-  const base = img.diag === 'tb' ? `${img.pct}% TB` : `${img.pct}% normal`;
-  return img.agentName ? `${base} - ${img.agentName}` : base;
-}
 
 export default function AnalyzedSidePanel({ images }) {
   const [previewImage, setPreviewImage] = useState(null);

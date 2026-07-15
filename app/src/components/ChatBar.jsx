@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { ALL_AGENTS } from '../data/agents';
 import { useMentionChatInput } from '../hooks/useMentionChatInput';
 import ChatHistory from './ChatHistory';
@@ -21,6 +21,7 @@ const ChatBar = forwardRef(function ChatBar(
 ) {
   const chat = useMentionChatInput({ onInteract });
   const [isMinimized, setIsMinimized] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   useImperativeHandle(ref, () => ({
     mentionAgent: (agent) => chat.selectAgent(agent),
@@ -30,6 +31,12 @@ const ChatBar = forwardRef(function ChatBar(
   const isIdle = loadingPhase === 'idle';
   const q = (chat.mentionQuery || '').toLowerCase();
   const candidates = ALL_AGENTS.filter((a) => a.name.toLowerCase().includes(q));
+
+  // Keep the highlighted candidate in range whenever the filtered list
+  // changes (new keystroke narrows/widens it).
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [chat.mentionQuery]);
 
   const handleSend = () => {
     if (!isIdle) return;
@@ -99,11 +106,12 @@ const ChatBar = forwardRef(function ChatBar(
             {chat.showMentionDropdown && (
               <div className="mention-dropdown">
                 <div className="mention-dropdown-title mono">Mencionar agente</div>
-                {candidates.map((cand) => (
+                {candidates.map((cand, index) => (
                   <div
                     key={cand.id}
-                    className="mention-candidate"
+                    className={`mention-candidate ${index === highlightedIndex ? 'highlighted' : ''}`}
                     onClick={() => chat.selectMentionFromDropdown(cand)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
                   >
                     <div className="mention-candidate-icon">
                       <i className={`ti ti-${cand.icon}`} />
@@ -139,6 +147,23 @@ const ChatBar = forwardRef(function ChatBar(
                       contentEditable
                       onInput={chat.handleInput}
                       onKeyDown={(e) => {
+                        if (chat.showMentionDropdown && candidates.length > 0) {
+                          if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            setHighlightedIndex((i) => (i + 1) % candidates.length);
+                            return;
+                          }
+                          if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setHighlightedIndex((i) => (i - 1 + candidates.length) % candidates.length);
+                            return;
+                          }
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            chat.selectMentionFromDropdown(candidates[highlightedIndex]);
+                            return;
+                          }
+                        }
                         chat.handleKeyDown(e);
                         if (e.key === 'Enter') handleSend();
                       }}

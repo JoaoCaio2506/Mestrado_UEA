@@ -22,11 +22,11 @@ export default function App() {
   const [analyzedImages, setAnalyzedImages] = useState(SAMPLE_ANALYZED_IMAGES);
   const [chatMessages, setChatMessages] = useState([]);
   const [loadingPhase, setLoadingPhase] = useState('idle');
-  const [progressWidth, setProgressWidth] = useState('0%');
-  const [progressDurationMs, setProgressDurationMs] = useState(0);
+  const [progressPct, setProgressPct] = useState(0);
 
   const chatRef = useRef(null);
   const loadingTimerRef = useRef(null);
+  const progressTimerRef = useRef(null);
   const mountedRef = useRef(true);
   const sessionIdRef = useRef(null);
   if (!sessionIdRef.current) sessionIdRef.current = crypto.randomUUID();
@@ -39,6 +39,7 @@ export default function App() {
     return () => {
       mountedRef.current = false;
       clearTimeout(loadingTimerRef.current);
+      clearInterval(progressTimerRef.current);
     };
   }, []);
 
@@ -69,12 +70,17 @@ export default function App() {
 
     const duration = 5000 + Math.random() * 5000;
     setLoadingPhase('loading');
-    setProgressWidth('0%');
-    setProgressDurationMs(duration);
+    setProgressPct(0);
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setProgressWidth('100%'));
-    });
+    // The percentage climbs toward the cosmetic duration but is capped at
+    // 99% — it only reaches 100% once the real n8n response has arrived,
+    // so the number never lies about the reply actually being ready.
+    const startTime = Date.now();
+    clearInterval(progressTimerRef.current);
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      setProgressPct(Math.min(99, Math.floor((elapsed / duration) * 99)));
+    }, 100);
 
     const cosmeticDelay = new Promise((resolve) => {
       clearTimeout(loadingTimerRef.current);
@@ -96,9 +102,11 @@ export default function App() {
       : Promise.resolve({ ok: true, value: buildDiagnosisResponse(selectedAgentId) });
 
     const [, outcome] = await Promise.all([cosmeticDelay, resultPromise]);
+    clearInterval(progressTimerRef.current);
     if (!mountedRef.current) return;
 
     setLoadingPhase('done');
+    setProgressPct(100);
     await new Promise((resolve) => setTimeout(resolve, 700));
     if (!mountedRef.current) return;
 
@@ -144,13 +152,10 @@ export default function App() {
 
     chatRef.current?.clear();
     setLoadingPhase('idle');
-    setProgressWidth('0%');
+    setProgressPct(0);
   };
 
   const handleClearChat = () => setChatMessages([]);
-
-  const effectiveProgressDurationMs = progressWidth === '100%' ? progressDurationMs : 200;
-  const progressLabel = loadingPhase === 'done' ? '100%' : 'Analisando…';
 
   return (
     <div className="dashboard">
@@ -174,9 +179,7 @@ export default function App() {
         hasInteracted={hasInteracted}
         onInteract={() => setHasInteracted(true)}
         loadingPhase={loadingPhase}
-        progressWidth={progressWidth}
-        progressDurationMs={effectiveProgressDurationMs}
-        progressLabel={progressLabel}
+        progressPct={progressPct}
         canSend={!!currentImage}
         onSend={handleSend}
         messages={chatMessages}

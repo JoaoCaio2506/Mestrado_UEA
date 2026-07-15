@@ -197,7 +197,7 @@
   inset: 0;
   background: linear-gradient(90deg, #1ab69a, #2fd9b8);
   border-radius: 9999px;
-  transition: width linear;
+  transition: width 120ms linear;
 }
 
 .chatbar-progress-label {

@@ -9,9 +9,7 @@ const ChatBar = forwardRef(function ChatBar(
     hasInteracted,
     onInteract,
     loadingPhase,
-    progressWidth,
-    progressDurationMs,
-    progressLabel,
+    progressPct,
     canSend,
     onSend,
     messages,
@@ -63,12 +61,9 @@ const ChatBar = forwardRef(function ChatBar(
               {!isIdle ? (
                 <>
                   <div className="chatbar-collapsed-track">
-                    <div
-                      className="chatbar-progress-fill"
-                      style={{ width: progressWidth, transitionDuration: `${progressDurationMs}ms` }}
-                    />
+                    <div className="chatbar-progress-fill" style={{ width: `${progressPct}%` }} />
                   </div>
-                  <div className="mono chatbar-collapsed-progress-label">{progressLabel}</div>
+                  <div className="mono chatbar-collapsed-progress-label">{progressPct}%</div>
                 </>
               ) : (
                 <div className="chatbar-collapsed-text">
@@ -182,12 +177,9 @@ const ChatBar = forwardRef(function ChatBar(
               ) : (
                 <div className="chatbar-progress-wrap">
                   <div className="chatbar-progress-track">
-                    <div
-                      className="chatbar-progress-fill"
-                      style={{ width: progressWidth, transitionDuration: `${progressDurationMs}ms` }}
-                    />
+                    <div className="chatbar-progress-fill" style={{ width: `${progressPct}%` }} />
                   </div>
-                  <div className="chatbar-progress-label mono">{progressLabel}</div>
+                  <div className="chatbar-progress-label mono">{progressPct}%</div>
                 </div>
               )}
             </div>

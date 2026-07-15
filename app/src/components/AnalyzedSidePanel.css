@@ -37,6 +37,11 @@
   background-repeat: no-repeat;
   background-color: #171d22;
   border: 2px solid var(--border-soft);
+  cursor: pointer;
+}
+
+.analyzed-thumb:hover {
+  border-color: var(--accent);
 }
 
 .analyzed-thumb-filename {

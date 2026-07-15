@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import ImageLightbox from './ImageLightbox';
 import './AnalyzedSidePanel.css';
 
 function badgeStyle(diag) {
@@ -12,6 +14,8 @@ function labelFor(img) {
 }
 
 export default function AnalyzedSidePanel({ images }) {
+  const [previewImage, setPreviewImage] = useState(null);
+
   return (
     <div className="analyzed-panel">
       <div className="analyzed-panel-title mono">Já analisadas</div>
@@ -22,6 +26,9 @@ export default function AnalyzedSidePanel({ images }) {
               key={img.id}
               className="analyzed-thumb"
               style={img.src ? { backgroundImage: `url("${img.src}")` } : undefined}
+              onClick={() => setPreviewImage(img)}
+              role="button"
+              tabIndex={0}
             >
               {!img.src && <div className="analyzed-thumb-filename mono">{img.name}</div>}
               <div className="analyzed-thumb-badge mono" style={badgeStyle(img.diag)}>
@@ -37,6 +44,8 @@ export default function AnalyzedSidePanel({ images }) {
           </div>
         </div>
       )}
+
+      <ImageLightbox image={previewImage} onClose={() => setPreviewImage(null)} />
     </div>
   );
 }

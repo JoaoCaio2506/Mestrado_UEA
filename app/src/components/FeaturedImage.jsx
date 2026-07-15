@@ -2,7 +2,8 @@ import NeuralActivation from './NeuralActivation';
 import './FeaturedImage.css';
 
 function resultLabel(result) {
-  return result.diag === 'tb' ? `${result.pct}% TB` : `${result.pct}% normal`;
+  const base = result.diag === 'tb' ? `${result.pct}% TB` : `${result.pct}% normal`;
+  return result.agentName ? `${base} - ${result.agentName}` : base;
 }
 
 export default function FeaturedImage({ image, isAnalyzing }) {

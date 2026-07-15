@@ -27,7 +27,7 @@ function buildSingleAgentText(agent) {
     `Olá, sou seu Especialista ${name}. Treinado para ter o melhor desempenho possível, atingi acurácia de ${agent.accuracy}%.\n\n` +
     `Analisei sua imagem e o Diagnóstico é: Tuberculose: ${tbPct}% Normal: ${normalPct}%\n\n` +
     `Conclusão Final: ${diagLabel} com confiança de ${confidence.toFixed(2)}%. Inferência realizada pelo modelo: ${name}`;
-  return { text, diag, pct: confidence };
+  return { text, diag, pct: confidence, agentName: name };
 }
 
 function buildConsensusText() {
@@ -38,7 +38,7 @@ function buildConsensusText() {
     `Olá, sou o Consenso Geral. Reuni os votos de ${names} sobre sua imagem.\n\n` +
     `Resultado agregado: Tuberculose: ${tbPct}% Normal: ${normalPct}%\n\n` +
     `Conclusão Final: ${diagLabel} com confiança de ${confidence.toFixed(2)}%. Inferência realizada por: Consenso Geral (5 modelos)`;
-  return { text, diag, pct: confidence };
+  return { text, diag, pct: confidence, agentName: 'Consenso Geral' };
 }
 
 function buildComparisonText() {
@@ -56,7 +56,7 @@ function buildComparisonText() {
   const text =
     `Comparação lado a lado dos modelos para sua imagem:\n\n${lines.join('\n')}\n\n` +
     `A maioria dos modelos aponta para ${diagLabel}. Use o Consenso Geral para uma decisão agregada única.`;
-  return { text, diag, pct: avgConfidence };
+  return { text, diag, pct: avgConfidence, agentName: 'Comparação' };
 }
 
 // agentId may be null (no agent mentioned/selected) -> defaults to consensus.

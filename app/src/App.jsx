@@ -103,7 +103,7 @@ export default function App() {
     if (!mountedRef.current) return;
 
     if (outcome.ok) {
-      const { text: responseText, diag, pct } = outcome.value;
+      const { text: responseText, diag, pct, agentName } = outcome.value;
       const roundedPct = Math.round(pct);
       setAnalyzedImages((prev) => {
         const next = [
@@ -111,6 +111,7 @@ export default function App() {
             id: `analyzed-${Date.now()}`,
             diag,
             pct: roundedPct,
+            agentName,
             src: currentImage.previewable ? currentImage.url : null,
             name: currentImage.name,
           },
@@ -127,7 +128,9 @@ export default function App() {
       ]);
       // The classified image stays in the featured slot with its result
       // badge instead of reverting to empty — the next upload replaces it.
-      setCurrentImage((prev) => (prev ? { ...prev, result: { diag, pct: roundedPct } } : prev));
+      setCurrentImage((prev) =>
+        prev ? { ...prev, result: { diag, pct: roundedPct, agentName } } : prev,
+      );
     } else {
       setChatMessages((prev) => [
         ...prev,

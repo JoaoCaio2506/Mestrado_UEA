@@ -56,10 +56,12 @@
   position: absolute;
   top: 10px;
   left: 10px;
+  max-width: calc(100% - 20px);
   font-size: 11px;
   padding: 5px 12px;
   border-radius: 9999px;
   font-weight: 500;
+  overflow-wrap: break-word;
 }
 
 .badge-analyzing {

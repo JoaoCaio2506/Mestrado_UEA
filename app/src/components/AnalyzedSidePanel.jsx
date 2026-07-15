@@ -7,7 +7,8 @@ function badgeStyle(diag) {
 }
 
 function labelFor(img) {
-  return img.diag === 'tb' ? `${img.pct}% TB` : `${img.pct}% normal`;
+  const base = img.diag === 'tb' ? `${img.pct}% TB` : `${img.pct}% normal`;
+  return img.agentName ? `${base} - ${img.agentName}` : base;
 }
 
 export default function AnalyzedSidePanel({ images }) {

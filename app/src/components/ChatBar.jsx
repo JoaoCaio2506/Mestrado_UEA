@@ -166,6 +166,16 @@ const ChatBar = forwardRef(function ChatBar(
                 </div>
               )}
             </div>
+
+            {!hasInteracted && (
+              <div className="chatbar-hint">
+                <i className="ti ti-bulb" />
+                <span>
+                  Dica: digite <span className="chatbar-hint-at">@</span> no chat para mencionar um
+                  agente, ou clique em "Selecionar" num card acima
+                </span>
+              </div>
+            )}
           </>
         )}
       </div>

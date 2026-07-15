@@ -4,11 +4,13 @@ export const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
 //   Tuberculose: NN%
 //   Normal: NN%
 //   Conclusão Final: **Classe** com confiança de **NN%**.
-// This pulls diag/pct out of that free-text response for the thumbnail badge.
+//   Inferência realizada pelo modelo: NomeDoModelo
+// This pulls diag/pct/agentName out of that free-text response for the badges.
 function parseDiagnosisFromText(text) {
   const tbMatch = text.match(/Tuberculose:\s*([\d]+(?:[.,]\d+)?)%/i);
   const normalMatch = text.match(/Normal:\s*([\d]+(?:[.,]\d+)?)%/i);
   const conclusionMatch = text.match(/Conclusão Final:\s*\*{0,2}([^*\n(]+?)\*{0,2}\s*(?:com|\(|$)/i);
+  const modelMatch = text.match(/Inferência realizada (?:pelo modelo|por):\s*\*{0,2}([^*\n(]+?)\*{0,2}\s*(?:\(|$)/i);
 
   const tbPct = tbMatch ? parseFloat(tbMatch[1].replace(',', '.')) : null;
   const normalPct = normalMatch ? parseFloat(normalMatch[1].replace(',', '.')) : null;
@@ -25,6 +27,7 @@ function parseDiagnosisFromText(text) {
   return {
     diag: diag ?? 'normal',
     pct: pct != null ? Math.round(pct) : 0,
+    agentName: modelMatch ? modelMatch[1].trim() : undefined,
   };
 }
 

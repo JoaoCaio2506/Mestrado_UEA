@@ -6,6 +6,7 @@ import ChatBar from './components/ChatBar';
 import { SAMPLE_ANALYZED_IMAGES } from './data/sampleImages';
 import { buildDiagnosisResponse } from './data/diagnosisResponse';
 import { callN8n, N8N_WEBHOOK_URL } from './integrations/n8n';
+import { callGradCam, GRADCAM_URL } from './integrations/gradcam';
 import './App.css';
 
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
@@ -101,7 +102,18 @@ export default function App() {
         )
       : Promise.resolve({ ok: true, value: buildDiagnosisResponse(selectedAgentId) });
 
-    const [, outcome] = await Promise.all([cosmeticDelay, resultPromise]);
+    // Grad-CAM runs alongside the diagnosis call — it's a visual extra, so a
+    // failure here just falls back to the plain uploaded image instead of
+    // blocking or erroring out the whole result.
+    const gradcamPromise =
+      GRADCAM_URL && currentImage.previewable
+        ? callGradCam({ imageFile: currentImage.file }).then(
+            (url) => ({ ok: true, url }),
+            () => ({ ok: false }),
+          )
+        : Promise.resolve({ ok: false });
+
+    const [, outcome, gradcamOutcome] = await Promise.all([cosmeticDelay, resultPromise, gradcamPromise]);
     clearInterval(progressTimerRef.current);
     if (!mountedRef.current) return;
 
@@ -113,6 +125,12 @@ export default function App() {
     if (outcome.ok) {
       const { text: responseText, diag, pct, agentName } = outcome.value;
       const roundedPct = Math.round(pct);
+      // Prefer the Grad-CAM heatmap once it's ready; otherwise fall back to
+      // the plain uploaded image (same as before this feature existed).
+      const gradcamUrl = gradcamOutcome.ok ? gradcamOutcome.url : null;
+      const displaySrc = gradcamUrl || (currentImage.previewable ? currentImage.url : null);
+      if (gradcamUrl) revokeIfBlob(currentImage.url);
+
       setAnalyzedImages((prev) => {
         const next = [
           {
@@ -120,7 +138,7 @@ export default function App() {
             diag,
             pct: roundedPct,
             agentName,
-            src: currentImage.previewable ? currentImage.url : null,
+            src: displaySrc,
             name: currentImage.name,
           },
           ...prev,
@@ -136,8 +154,10 @@ export default function App() {
       ]);
       // The classified image stays in the featured slot with its result
       // badge instead of reverting to empty — the next upload replaces it.
+      // Swapping the src to the Grad-CAM image happens in this same update,
+      // so it only ever appears alongside the chat reply, never before it.
       setCurrentImage((prev) =>
-        prev ? { ...prev, result: { diag, pct: roundedPct, agentName } } : prev,
+        prev ? { ...prev, url: displaySrc || prev.url, result: { diag, pct: roundedPct, agentName } } : prev,
       );
     } else {
       setChatMessages((prev) => [

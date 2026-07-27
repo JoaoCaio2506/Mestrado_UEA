@@ -44,6 +44,34 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    // Run the bundled sample thumbnails through Grad-CAM too, so the
+    // history panel isn't the only place showing plain X-rays on first
+    // load. Each one swaps in independently as its call resolves; any
+    // failure just leaves that sample as the plain image.
+    if (!GRADCAM_URL) return;
+    let cancelled = false;
+    SAMPLE_ANALYZED_IMAGES.forEach((sample) => {
+      (async () => {
+        try {
+          const response = await fetch(sample.src);
+          const blob = await response.blob();
+          const file = new File([blob], `${sample.id}.png`, { type: blob.type || 'image/png' });
+          const gradcamUrl = await callGradCam({ imageFile: file });
+          if (cancelled) return;
+          setAnalyzedImages((prev) =>
+            prev.map((img) => (img.id === sample.id ? { ...img, src: gradcamUrl } : img)),
+          );
+        } catch {
+          // Keep the plain sample image on failure.
+        }
+      })();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleSelectAgent = (agent) => {
     setSelectedAgentId(agent.id);
     chatRef.current?.mentionAgent(agent);
@@ -173,6 +201,7 @@ export default function App() {
     chatRef.current?.clear();
     setLoadingPhase('idle');
     setProgressPct(0);
+    setSelectedAgentId(null);
   };
 
   const handleClearChat = () => setChatMessages([]);

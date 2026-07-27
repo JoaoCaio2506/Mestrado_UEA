@@ -8,9 +8,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 libsm6 libxext6 libxrender1 libxcb1 libgl1 libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# CPU-only torch build first — the default PyPI wheel bundles CUDA and is
-# multiple GB larger, which this VPS (no GPU) doesn't need.
-RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch
+# CPU-only torch + torchvision first, both from the same index — the
+# default PyPI wheels bundle CUDA (multiple GB larger, unneeded on this
+# VPS), and installing them separately from mismatched indexes leaves
+# torchvision's compiled ops (e.g. nms) built against a different torch
+# ABI, which fails at import time.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch torchvision
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

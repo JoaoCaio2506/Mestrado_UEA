@@ -13,7 +13,7 @@ import cv2
 import torch
 from PIL import Image
 from scipy.ndimage import gaussian_filter
-import matplotlib.cm as cm
+import matplotlib
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
@@ -176,7 +176,7 @@ def gerar_gradcam(img_original: Image.Image) -> Image.Image:
         hm = (hm - threshold) / (1 - threshold)
         hm = np.clip(hm, 0, 1)
 
-    jet = cm.get_cmap("jet")
+    jet = matplotlib.colormaps["jet"]
     jet_colors = jet(hm)[:, :, :3]
     alpha_map = (hm * GRADCAM_CONFIG["intensidade"])[..., np.newaxis]
 

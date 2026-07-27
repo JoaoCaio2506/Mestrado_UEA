@@ -15,8 +15,9 @@
   flex-shrink: 0;
 }
 
-/* Exactly 4 thumbnail slots are visible at once; a 5th+ image requires
-   scrolling this inner list instead of shrinking every thumb to fit. */
+/* Exactly 3 thumbnail slots are visible at once, filling the full height
+   of the column; a 4th+ image requires scrolling this inner list instead
+   of shrinking every thumb to fit. */
 .analyzed-thumbs-scroll {
   flex: 1;
   min-height: 0;
@@ -28,7 +29,7 @@
 
 .analyzed-thumb {
   position: relative;
-  flex: 0 0 calc((100% - 30px) / 4);
+  flex: 0 0 calc((100% - 20px) / 3);
   min-height: 70px;
   border-radius: 10px;
   overflow: hidden;

@@ -23,8 +23,8 @@
 .lightbox-content {
   position: relative;
   cursor: default;
-  width: min(90vw, 1100px);
-  height: min(90vh, 850px);
+  display: inline-block;
+  line-height: 0;
 }
 
 .lightbox-badge {
@@ -43,9 +43,11 @@
 
 .lightbox-img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width: auto;
+  height: auto;
+  min-width: min(60vw, 600px);
+  max-width: min(90vw, 1100px);
+  max-height: min(85vh, 800px);
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }

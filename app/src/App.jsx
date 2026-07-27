@@ -79,9 +79,34 @@ export default function App() {
   };
 
   const handleFileSelected = (file) => {
-    // Only safe to revoke the previous blob if it never made it into the
-    // analyzed history — once classified, that list owns the URL instead.
-    if (currentImage && !currentImage.result) revokeIfBlob(currentImage.url);
+    if (currentImage) {
+      if (currentImage.result) {
+        // The previous image was already classified and stayed in the
+        // featured slot on its own — only now, being replaced by a new
+        // upload, does it move into the "já analisadas" history.
+        const { diag, pct, agentName } = currentImage.result;
+        setAnalyzedImages((prev) => {
+          const next = [
+            {
+              id: `analyzed-${Date.now()}`,
+              diag,
+              pct,
+              agentName,
+              src: currentImage.previewable ? currentImage.url : null,
+              name: currentImage.name,
+            },
+            ...prev,
+          ];
+          // Only the 10 most recent analyses stay accessible, even via scroll.
+          const kept = next.slice(0, MAX_HISTORY);
+          next.slice(MAX_HISTORY).forEach((img) => revokeIfBlob(img.src));
+          return kept;
+        });
+      } else {
+        // Never classified — nothing else owns this URL, safe to revoke.
+        revokeIfBlob(currentImage.url);
+      }
+    }
     const url = URL.createObjectURL(file);
     setCurrentImage({
       url,
@@ -159,29 +184,14 @@ export default function App() {
       const displaySrc = gradcamUrl || (currentImage.previewable ? currentImage.url : null);
       if (gradcamUrl) revokeIfBlob(currentImage.url);
 
-      setAnalyzedImages((prev) => {
-        const next = [
-          {
-            id: `analyzed-${Date.now()}`,
-            diag,
-            pct: roundedPct,
-            agentName,
-            src: displaySrc,
-            name: currentImage.name,
-          },
-          ...prev,
-        ];
-        // Only the 10 most recent analyses stay accessible, even via scroll.
-        const kept = next.slice(0, MAX_HISTORY);
-        next.slice(MAX_HISTORY).forEach((img) => revokeIfBlob(img.src));
-        return kept;
-      });
       setChatMessages((prev) => [
         ...prev,
         { id: `assistant-${Date.now()}`, role: 'assistant', text: responseText },
       ]);
       // The classified image stays in the featured slot with its result
-      // badge instead of reverting to empty — the next upload replaces it.
+      // badge instead of reverting to empty — it only moves into the
+      // "já analisadas" history once the next upload replaces it (see
+      // handleFileSelected), so it's never shown in both places at once.
       // Swapping the src to the Grad-CAM image happens in this same update,
       // so it only ever appears alongside the chat reply, never before it.
       setCurrentImage((prev) =>

@@ -58,18 +58,18 @@
   overflow-wrap: break-word;
 }
 
+/* Matches .featured-image-badge exactly, for visual consistency with the
+   home screen's diagnosis label. */
 .analyzed-thumb-badge {
   position: absolute;
-  bottom: 6px;
-  left: 6px;
-  max-width: calc(100% - 12px);
-  font-size: 10px;
-  padding: 4px 10px;
+  top: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  font-size: 11px;
+  padding: 5px 12px;
   border-radius: 9999px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-weight: 500;
+  overflow-wrap: break-word;
 }
 
 .analyzed-empty {

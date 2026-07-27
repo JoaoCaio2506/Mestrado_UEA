@@ -5,7 +5,7 @@ WORKDIR /app
 # though it skips the GUI/X11 stack itself — python:3.11-slim has none of
 # them by default.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libglib2.0-0 libsm6 libxext6 libxrender1 libxcb1 \
+    libglib2.0-0 libsm6 libxext6 libxrender1 libxcb1 libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 # CPU-only torch build first — the default PyPI wheel bundles CUDA and is

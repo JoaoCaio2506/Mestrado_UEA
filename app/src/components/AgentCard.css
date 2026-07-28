@@ -61,7 +61,7 @@
 .agent-name {
   font-family: var(--font-title);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--text-primary);
   min-width: 0;
   width: 100%;
@@ -70,9 +70,9 @@
 
 .agent-desc {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.35;
+  line-height: 1.45;
   font-weight: 500;
   text-align: justify;
 }

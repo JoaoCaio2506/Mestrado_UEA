@@ -24,8 +24,8 @@ export const AGENTS = [
     id: 'unet',
     icon: 'brain',
     name: 'UNet',
-    desc: '99,88% de acurácia, com sensibilidade e precisão máximas no conjunto de testes.',
-    accuracy: 99.88,
+    desc: '99,5% de acurácia, com sensibilidade e precisão máximas no conjunto de testes.',
+    accuracy: 99.5,
   },
   {
     id: 'yolo26',

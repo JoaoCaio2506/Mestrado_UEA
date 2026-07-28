@@ -22,7 +22,7 @@
   pointer-events: none;
   z-index: 0;
 }
-.auth-bg-network .neural-activation { transform: scale(4.5); }
+.auth-bg-network .neural-activation { transform: scale(6.5); }
 
 .auth-page-title {
   position: relative;

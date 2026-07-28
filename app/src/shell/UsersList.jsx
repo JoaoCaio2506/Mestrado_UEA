@@ -5,7 +5,7 @@ import Pagination from './Pagination';
 import { matchesDateFilter, yearsPresentIn } from './dateFilter';
 import './ShellTables.css';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 6;
 
 function initialsFor(name) {
   return (

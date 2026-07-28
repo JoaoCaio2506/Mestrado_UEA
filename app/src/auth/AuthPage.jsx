@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import BrandMark from '../components/BrandMark';
+import NeuralActivation from '../components/NeuralActivation';
 import './AuthPage.css';
 
 function EyeToggle({ shown, onClick }) {
@@ -115,6 +116,12 @@ export default function AuthPage() {
 
   return (
     <div className="auth-stage">
+      <div className="auth-bg-network" aria-hidden="true">
+        <NeuralActivation />
+      </div>
+      <h1 className="auth-page-title">
+        Sistema Multiagentes de Modelos Multimodais para a detecção Automatizada da Tuberculose Pulmonar
+      </h1>
       {mode === 'login' && (
         <form className="auth-card" onSubmit={handleLogin}>
           <div className="auth-mark">

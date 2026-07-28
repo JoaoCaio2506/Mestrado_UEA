@@ -7,6 +7,7 @@ import { SAMPLE_ANALYZED_IMAGES } from './data/sampleImages';
 import { buildDiagnosisResponse } from './data/diagnosisResponse';
 import { callN8n, N8N_WEBHOOK_URL } from './integrations/n8n';
 import { callGradCam, GRADCAM_URL } from './integrations/gradcam';
+import { persistInference } from './lib/persistInference';
 import './App.css';
 
 const IMAGE_MIME_TYPES = ['image/jpeg', 'image/png'];
@@ -184,6 +185,7 @@ export default function App() {
     if (outcome.ok) {
       const { text: responseText, diag, pct, agentName } = outcome.value;
       const roundedPct = Math.round(pct);
+      persistInference({ file: currentImage.file, diag, pct: roundedPct, agentName });
       // Prefer the Grad-CAM heatmap once it's ready; otherwise fall back to
       // the plain uploaded image (same as before this feature existed).
       const gradcamUrl = gradcamOutcome.ok ? gradcamOutcome.url : null;

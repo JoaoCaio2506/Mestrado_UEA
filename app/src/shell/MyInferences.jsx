@@ -7,7 +7,7 @@ import Pagination from './Pagination';
 import { matchesDateFilter, yearsPresentIn } from './dateFilter';
 import './ShellTables.css';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 6;
 
 export default function MyInferences() {
   const { session } = useAuth();
@@ -95,10 +95,9 @@ export default function MyInferences() {
   return (
     <div className="shell-page">
       <div className="shell-topbar">
-        <p className="shell-eyebrow">Aba 2 de 3</p>
         <h2 className="shell-title">Minhas inferências</h2>
         <p className="shell-sub">
-          Todo diagnóstico que <strong>você</strong> já rodou, salvo por conta.
+          Todo diagnóstico que <strong>você</strong> já solicitou, está aqui.
         </p>
       </div>
 

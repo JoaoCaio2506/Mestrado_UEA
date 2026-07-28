@@ -75,9 +75,8 @@ export default function UsersList() {
   return (
     <div className="shell-page">
       <div className="shell-topbar">
-        <p className="shell-eyebrow">Aba 3 de 3</p>
         <h2 className="shell-title">Usuários</h2>
-        <p className="shell-sub">Quem já acessou o sistema, como entrou, e quanto usou.</p>
+        <p className="shell-sub">Lista de usuários do sistema.</p>
       </div>
 
       <DateFilterBar

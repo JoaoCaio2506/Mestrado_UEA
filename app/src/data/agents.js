@@ -2,7 +2,7 @@ export const AGENTS = [
   {
     id: 'convnext',
     icon: 'cpu',
-    name: 'ConvNeXt Tiny',
+    name: 'ConvNeXt',
     desc: '97,86% de acurácia e AUC-ROC de 0,9980, com alta estabilidade no aprendizado de recursos.',
     accuracy: 97.86,
   },
@@ -16,21 +16,21 @@ export const AGENTS = [
   {
     id: 'efficientnet',
     icon: 'atom-2',
-    name: 'EfficientNetV2-B0',
+    name: 'EfficientNet',
     desc: '99,64% de acurácia, oferecendo o melhor equilíbrio entre precisão técnica e eficiência de hardware.',
     accuracy: 99.64,
   },
   {
     id: 'unet',
     icon: 'brain',
-    name: 'U-Net Classifier',
+    name: 'UNet',
     desc: '99,88% de acurácia, com sensibilidade e precisão máximas no conjunto de testes.',
     accuracy: 99.88,
   },
   {
     id: 'yolo26',
     icon: 'scan-eye',
-    name: 'YOLO26 Nano',
+    name: 'YOLO26',
     desc: '99,88% de acurácia e inferência recorde de 0.3ms, focado em alta velocidade e baixo custo.',
     accuracy: 99.88,
   },

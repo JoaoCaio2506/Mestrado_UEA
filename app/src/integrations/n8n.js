@@ -1,3 +1,5 @@
+import { ALL_AGENTS } from '../data/agents';
+
 export const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || '';
 
 // n8n's consensus/comparison agents identify themselves with longer,
@@ -54,7 +56,7 @@ function parseDiagnosisFromText(text) {
 // nodes already call the model APIs, and the "Imagem" binary property the
 // whole workflow expects can be set directly on the n8n Webhook node without
 // any decoding step.
-export async function callN8n({ text, imageFile, sessionId, signal }) {
+export async function callN8n({ text, imageFile, sessionId, agentId, signal }) {
   if (!N8N_WEBHOOK_URL) {
     throw new Error('VITE_N8N_WEBHOOK_URL não configurada.');
   }
@@ -83,5 +85,14 @@ export async function callN8n({ text, imageFile, sessionId, signal }) {
       ? data
       : data.output ?? data.text ?? data.chatOutput ?? JSON.stringify(data);
 
-  return { text: responseText, ...parseDiagnosisFromText(responseText) };
+  const parsed = parseDiagnosisFromText(responseText);
+  // The Comparação/Consenso replies don't always include the "Inferência
+  // realizada..." line the parser looks for — fall back to the agent that
+  // was actually selected so the badge/table never show a blank model name.
+  if (!parsed.agentName && agentId) {
+    const agent = ALL_AGENTS.find((a) => a.id === agentId);
+    if (agent) parsed.agentName = agent.id === 'comparacao' ? 'Comparação' : agent.name;
+  }
+
+  return { text: responseText, ...parsed };
 }

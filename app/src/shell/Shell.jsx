@@ -37,8 +37,8 @@ export default function Shell() {
             <BrandMark size={18} />
           </div>
           <div className="shell-brand-text">
-            TB Multiagentes
-            <span>Detecção pulmonar</span>
+            Sistema Multiagentes
+            <span>de Modelos Multimodais</span>
           </div>
         </div>
 

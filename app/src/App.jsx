@@ -156,6 +156,7 @@ export default function App() {
           text,
           imageFile: currentImage.file,
           sessionId: sessionIdRef.current,
+          agentId: selectedAgentId,
         }).then(
           (value) => ({ ok: true, value }),
           (error) => ({ ok: false, error }),

@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.12;
+  opacity: 0.2;
   pointer-events: none;
   z-index: 0;
 }
@@ -41,11 +41,11 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 380px;
+  max-width: 330px;
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: 16px;
-  padding: 36px 32px 28px;
+  padding: 28px 24px 22px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
 }
 

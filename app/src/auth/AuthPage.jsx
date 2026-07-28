@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import BrandMark from '../components/BrandMark';
 import NeuralActivation from '../components/NeuralActivation';
 import './AuthPage.css';
 
@@ -124,9 +123,6 @@ export default function AuthPage() {
       </h1>
       {mode === 'login' && (
         <form className="auth-card" onSubmit={handleLogin}>
-          <div className="auth-mark">
-            <BrandMark />
-          </div>
           <h1 className="auth-title">Entrar no sistema</h1>
           <p className="auth-sub">
             Sistema Multiagentes de Modelos Multimodais para detecção de Tuberculose Pulmonar.

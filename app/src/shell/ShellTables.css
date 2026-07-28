@@ -1,6 +1,5 @@
 .shell-page {
   padding: 28px 40px 40px;
-  max-width: 1200px;
 }
 
 .shell-topbar { margin-bottom: 20px; }
@@ -44,6 +43,105 @@
   font-family: var(--font-body);
   font-size: 12px;
   color: var(--text-muted);
+}
+
+.shell-filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.shell-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.shell-filter-field label {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.shell-filter-field select {
+  background: #0d1219;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  min-width: 84px;
+}
+.shell-filter-field select:focus { border-color: var(--accent); }
+.shell-filter-clear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  height: fit-content;
+}
+.shell-filter-clear:hover { color: var(--accent); border-color: var(--accent); }
+.shell-filter-clear i { font-size: 13px; }
+
+.shell-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-soft);
+}
+.shell-pagination-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.shell-icon-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.shell-cell-image {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.shell-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #0d1219;
+  border: 1px solid var(--border-soft);
+}
+.shell-thumb-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: #0d1219;
+  border: 1px solid var(--border-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.shell-thumb-placeholder i { font-size: 16px; }
+.shell-cell-image-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
 }
 .shell-table-empty {
   padding: 40px 16px;

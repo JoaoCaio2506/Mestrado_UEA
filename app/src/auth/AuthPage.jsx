@@ -1,6 +1,21 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import BrandMark from '../components/BrandMark';
 import './AuthPage.css';
+
+function EyeToggle({ shown, onClick }) {
+  return (
+    <button
+      type="button"
+      className="auth-eye-toggle"
+      tabIndex={-1}
+      onClick={onClick}
+      aria-label={shown ? 'Ocultar senha' : 'Mostrar senha'}
+    >
+      <i className={`ti ${shown ? 'ti-eye-off' : 'ti-eye'}`} />
+    </button>
+  );
+}
 
 function GoogleIcon() {
   return (
@@ -30,7 +45,9 @@ export default function AuthPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
 
   if (!supabase) {
@@ -45,6 +62,12 @@ export default function AuthPage() {
       </div>
     );
   }
+
+  const goTo = (nextMode) => {
+    setError('');
+    setNotice('');
+    setMode(nextMode);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -68,22 +91,34 @@ export default function AuthPage() {
     if (signUpError) setError(signUpError.message);
   };
 
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setError('');
+    setNotice('');
+    setBusy(true);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    setBusy(false);
+    if (resetError) setError(resetError.message);
+    else setNotice('Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha.');
+  };
+
   const handleGoogle = async () => {
     setError('');
-    await supabase.auth.signInWithOAuth({ provider: 'google' });
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    if (oauthError) setError(oauthError.message);
   };
 
   return (
     <div className="auth-stage">
-      {mode === 'login' ? (
+      {mode === 'login' && (
         <form className="auth-card" onSubmit={handleLogin}>
           <div className="auth-mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#0d1f1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4Z" />
-              <path d="M6 12v1a6 6 0 0 0 12 0v-1" />
-              <path d="M12 19v3" />
-              <path d="M8 22h8" />
-            </svg>
+            <BrandMark />
           </div>
           <h1 className="auth-title">Entrar no sistema</h1>
           <p className="auth-sub">
@@ -103,14 +138,20 @@ export default function AuthPage() {
           </div>
           <div className="auth-field">
             <label htmlFor="auth-pass">Senha</label>
-            <input
-              id="auth-pass"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className="auth-input-wrap">
+              <input
+                id="auth-pass"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+              <EyeToggle shown={showPassword} onClick={() => setShowPassword((s) => !s)} />
+            </div>
+            <button type="button" className="auth-forgot-link" onClick={() => goTo('forgot')}>
+              Esqueceu a senha?
+            </button>
           </div>
 
           {error && <p className="auth-error">{error}</p>}
@@ -127,27 +168,14 @@ export default function AuthPage() {
           </button>
 
           <p className="auth-footer">
-            Não tem conta?{' '}
-            <a
-              onClick={() => {
-                setError('');
-                setMode('signup');
-              }}
-            >
-              Cadastre-se
-            </a>
+            Não tem conta? <a onClick={() => goTo('signup')}>Cadastre-se</a>
           </p>
         </form>
-      ) : (
+      )}
+
+      {mode === 'signup' && (
         <form className="auth-card" onSubmit={handleSignup}>
-          <button
-            type="button"
-            className="auth-back-link"
-            onClick={() => {
-              setError('');
-              setMode('login');
-            }}
-          >
+          <button type="button" className="auth-back-link" onClick={() => goTo('login')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m12 19-7-7 7-7" />
               <path d="M19 12H5" />
@@ -182,15 +210,18 @@ export default function AuthPage() {
           </div>
           <div className="auth-field">
             <label htmlFor="auth-signup-pass">Senha</label>
-            <input
-              id="auth-signup-pass"
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className="auth-input-wrap">
+              <input
+                id="auth-signup-pass"
+                type={showPassword ? 'text' : 'password'}
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+              <EyeToggle shown={showPassword} onClick={() => setShowPassword((s) => !s)} />
+            </div>
           </div>
 
           {error && <p className="auth-error">{error}</p>}
@@ -204,6 +235,42 @@ export default function AuthPage() {
           <button className="auth-btn-google" type="button" onClick={handleGoogle}>
             <GoogleIcon />
             Continuar com Google
+          </button>
+        </form>
+      )}
+
+      {mode === 'forgot' && (
+        <form className="auth-card" onSubmit={handleForgot}>
+          <button type="button" className="auth-back-link" onClick={() => goTo('login')}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
+            Voltar para login
+          </button>
+
+          <h1 className="auth-title">Recuperar senha</h1>
+          <p className="auth-sub">
+            Informe o e-mail da sua conta. Enviaremos um link para você definir uma nova senha.
+          </p>
+
+          <div className="auth-field">
+            <label htmlFor="auth-forgot-email">E-mail</label>
+            <input
+              id="auth-forgot-email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="joao.nunes@exemplo.com"
+            />
+          </div>
+
+          {error && <p className="auth-error">{error}</p>}
+          {notice && <p className="auth-notice">{notice}</p>}
+
+          <button className="auth-btn-primary" type="submit" disabled={busy}>
+            {busy ? 'Enviando…' : 'Enviar link de recuperação'}
           </button>
         </form>
       )}

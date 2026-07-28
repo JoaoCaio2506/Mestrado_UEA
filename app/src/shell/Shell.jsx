@@ -4,6 +4,7 @@ import MyInferences from './MyInferences';
 import UsersList from './UsersList';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../auth/AuthContext';
+import BrandMark from '../components/BrandMark';
 import './Shell.css';
 
 const TABS = [
@@ -32,7 +33,9 @@ export default function Shell() {
     <div className="shell">
       <aside className={`shell-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="shell-brand">
-          <div className="shell-brand-mark" />
+          <div className="shell-brand-mark">
+            <BrandMark size={18} />
+          </div>
           <div className="shell-brand-text">
             TB Multiagentes
             <span>Detecção pulmonar</span>

@@ -185,10 +185,10 @@ export default function App() {
     if (outcome.ok) {
       const { text: responseText, diag, pct, agentName } = outcome.value;
       const roundedPct = Math.round(pct);
-      persistInference({ file: currentImage.file, diag, pct: roundedPct, agentName });
       // Prefer the Grad-CAM heatmap once it's ready; otherwise fall back to
       // the plain uploaded image (same as before this feature existed).
       const gradcamUrl = gradcamOutcome.ok ? gradcamOutcome.url : null;
+      persistInference({ file: currentImage.file, gradcamUrl, diag, pct: roundedPct, agentName });
       const displaySrc = gradcamUrl || (currentImage.previewable ? currentImage.url : null);
 
       if (currentImage.result) {

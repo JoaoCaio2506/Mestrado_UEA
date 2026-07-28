@@ -1,6 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import DateFilterBar from './DateFilterBar';
+import Pagination from './Pagination';
+import { matchesDateFilter, yearsPresentIn } from './dateFilter';
 import './ShellTables.css';
+
+const PAGE_SIZE = 10;
 
 function initialsFor(name) {
   return (
@@ -31,6 +36,8 @@ export default function UsersList() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filter, setFilter] = useState({ day: '', month: '', year: '' });
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!supabase) return;
@@ -53,6 +60,18 @@ export default function UsersList() {
     };
   }, []);
 
+  const years = useMemo(() => yearsPresentIn(rows, (r) => r.last_sign_in_at), [rows]);
+  const filteredRows = useMemo(
+    () => rows.filter((row) => matchesDateFilter(row.last_sign_in_at, filter)),
+    [rows, filter],
+  );
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const pageRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter]);
+
   return (
     <div className="shell-page">
       <div className="shell-topbar">
@@ -61,10 +80,17 @@ export default function UsersList() {
         <p className="shell-sub">Quem já acessou o sistema, como entrou, e quanto usou.</p>
       </div>
 
+      <DateFilterBar
+        {...filter}
+        years={years}
+        onChange={(patch) => setFilter((prev) => ({ ...prev, ...patch }))}
+        onClear={() => setFilter({ day: '', month: '', year: '' })}
+      />
+
       <div className="shell-table-card">
         <div className="shell-table-toolbar">
           <span className="shell-table-count">
-            {rows.length} usuário{rows.length === 1 ? '' : 's'}
+            {filteredRows.length} usuário{filteredRows.length === 1 ? '' : 's'}
           </span>
         </div>
 
@@ -72,44 +98,49 @@ export default function UsersList() {
           <div className="shell-table-empty">Carregando…</div>
         ) : error ? (
           <div className="shell-table-empty">Não foi possível carregar: {error}</div>
-        ) : rows.length === 0 ? (
-          <div className="shell-table-empty">Nenhum usuário ainda.</div>
-        ) : (
-          <div className="shell-table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Usuário</th>
-                  <th>Login via</th>
-                  <th>Inferências</th>
-                  <th>Último acesso</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((u) => (
-                  <tr key={u.id}>
-                    <td>
-                      <div className="shell-cell-user">
-                        <div className="shell-avatar-sm">{initialsFor(u.full_name)}</div>
-                        <div>
-                          <div className="shell-cell-primary">{u.full_name || u.email}</div>
-                          <div className="shell-cell-user-email">{u.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="shell-provider-chip">
-                        <i className={`ti ${u.provider === 'google' ? 'ti-brand-google' : 'ti-mail'}`} />
-                        {u.provider === 'google' ? 'Google' : 'E-mail'}
-                      </span>
-                    </td>
-                    <td className="mono shell-cell-primary">{u.inference_count}</td>
-                    <td className="mono">{formatLastSeen(u.last_sign_in_at)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        ) : filteredRows.length === 0 ? (
+          <div className="shell-table-empty">
+            {rows.length === 0 ? 'Nenhum usuário ainda.' : 'Nenhum usuário encontrado para esse filtro (último acesso).'}
           </div>
+        ) : (
+          <>
+            <div className="shell-table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Usuário</th>
+                    <th>Login via</th>
+                    <th>Inferências</th>
+                    <th>Último acesso</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageRows.map((u) => (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="shell-cell-user">
+                          <div className="shell-avatar-sm">{initialsFor(u.full_name)}</div>
+                          <div>
+                            <div className="shell-cell-primary">{u.full_name || u.email}</div>
+                            <div className="shell-cell-user-email">{u.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="shell-provider-chip">
+                          <i className={`ti ${u.provider === 'google' ? 'ti-brand-google' : 'ti-mail'}`} />
+                          {u.provider === 'google' ? 'Google' : 'E-mail'}
+                        </span>
+                      </td>
+                      <td className="mono shell-cell-primary">{u.inference_count}</td>
+                      <td className="mono">{formatLastSeen(u.last_sign_in_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination page={page} pageCount={pageCount} onChange={setPage} />
+          </>
         )}
       </div>
     </div>

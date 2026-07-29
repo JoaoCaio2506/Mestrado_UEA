@@ -37,7 +37,7 @@ export default function AuthNetworkBackground() {
   return (
     <svg
       viewBox="0 0 1440 900"
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="none"
       style={{ width: '100%', height: '100%' }}
       fill="none"
     >

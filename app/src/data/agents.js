@@ -7,11 +7,11 @@ export const AGENTS = [
     accuracy: 97.86,
   },
   {
-    id: 'resnet50',
+    id: 'densenet121',
     icon: 'network',
-    name: 'ResNet50',
-    desc: '74,76% de acurácia, utilizando conexões residuais consolidadas para otimizar o fluxo de dados.',
-    accuracy: 74.76,
+    name: 'DenseNet121',
+    desc: '99,05% de acurácia, utilizando conexões densas consolidadas em radiologia médica para reaproveitar recursos e garantir alta estabilidade clínica.',
+    accuracy: 99.05,
   },
   {
     id: 'efficientnet',

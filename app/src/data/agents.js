@@ -9,14 +9,14 @@ export const AGENTS = [
   {
     id: 'densenet121',
     icon: 'network',
-    name: 'DenseNet121',
+    name: 'DenseNet 121',
     desc: '99,05% de acurácia, utilizando conexões densas consolidadas em radiologia médica para reaproveitar recursos e garantir alta estabilidade clínica.',
     accuracy: 99.05,
   },
   {
     id: 'efficientnet',
     icon: 'atom-2',
-    name: 'EfficientNetV2',
+    name: 'EfficientNet V2',
     desc: '99,64% de acurácia, oferecendo o melhor equilíbrio entre precisão técnica e eficiência de hardware.',
     accuracy: 99.64,
   },

@@ -5,13 +5,13 @@ import './NeuralActivation.css';
 // state), but with more layers/nodes spread across the whole area instead
 // of a small diagram stretched up via CSS transform.
 const LAYERS = [
-  { x: 60, nodes: [110, 330, 550, 770] },
+  { x: 60, nodes: [150, 450, 750] },
   { x: 280, nodes: [70, 260, 450, 640, 830] },
   { x: 500, nodes: [90, 310, 530, 750] },
   { x: 720, nodes: [80, 270, 460, 650, 840] },
   { x: 940, nodes: [100, 320, 540, 760] },
   { x: 1160, nodes: [60, 250, 440, 630, 820] },
-  { x: 1380, nodes: [120, 340, 560, 780] },
+  { x: 1380, nodes: [170, 470, 770] },
 ];
 
 const LAYER_DELAYS = [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2];

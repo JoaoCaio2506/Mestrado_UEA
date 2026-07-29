@@ -5,7 +5,7 @@ import './NeuralActivation.css';
 // state), but with more layers/nodes spread across the whole area instead
 // of a small diagram stretched up via CSS transform.
 const LAYERS = [
-  { x: 60, nodes: [80, 260, 440, 620, 800] },
+  { x: 60, nodes: [110, 330, 550, 770] },
   { x: 280, nodes: [40, 150, 260, 380, 510, 650, 800] },
   { x: 500, nodes: [90, 210, 330, 470, 600, 730, 850] },
   { x: 720, nodes: [50, 170, 300, 430, 560, 690, 820] },

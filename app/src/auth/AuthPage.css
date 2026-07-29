@@ -15,14 +15,10 @@
 .auth-bg-network {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   opacity: 0.15;
   pointer-events: none;
   z-index: 0;
 }
-.auth-bg-network .neural-activation { transform: scale(5.5); }
 
 .auth-page-title {
   position: relative;

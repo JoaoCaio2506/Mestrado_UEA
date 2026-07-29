@@ -124,9 +124,6 @@ export default function AuthPage() {
       {mode === 'login' && (
         <form className="auth-card" onSubmit={handleLogin}>
           <h1 className="auth-title">Entrar no sistema</h1>
-          <p className="auth-sub">
-            Sistema Multiagentes de Modelos Multimodais para detecção de Tuberculose Pulmonar.
-          </p>
 
           <div className="auth-field">
             <label htmlFor="auth-email">E-mail</label>

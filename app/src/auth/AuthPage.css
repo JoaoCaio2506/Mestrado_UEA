@@ -41,7 +41,7 @@
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: 16px;
-  padding: 28px 24px 22px;
+  padding: 24px 22px 20px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
 }
 
@@ -71,6 +71,7 @@
   margin: 0 0 26px;
   line-height: 1.5;
 }
+.auth-title + .auth-field { margin-top: 18px; }
 
 .auth-field { margin-bottom: 14px; }
 .auth-field label {

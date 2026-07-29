@@ -59,7 +59,7 @@ export default function AuthNetworkBackground() {
             className="nn-node"
             cx={layer.x}
             cy={y}
-            r={7}
+            r={5}
             style={{ animationDelay: `${LAYER_DELAYS[layerIdx]}s` }}
           />
         )),

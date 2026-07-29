@@ -16,7 +16,7 @@ export const AGENTS = [
   {
     id: 'efficientnet',
     icon: 'atom-2',
-    name: 'EfficientNet',
+    name: 'EfficientNetV2',
     desc: '99,64% de acurácia, oferecendo o melhor equilíbrio entre precisão técnica e eficiência de hardware.',
     accuracy: 99.64,
   },
